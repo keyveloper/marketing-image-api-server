@@ -5,6 +5,7 @@ import org.apache.tika.Tika
 import org.example.marketingimageapiserver.dto.AdvertisementImageMetadata
 import org.example.marketingimageapiserver.dto.AdvertisementImageMetadataEntity
 import org.example.marketingimageapiserver.dto.AdvertisementImageMetadataWithUrl
+import org.example.marketingimageapiserver.dto.ConnectAdvertisementResult
 import org.example.marketingimageapiserver.dto.DeleteAdImageResult
 import org.example.marketingimageapiserver.dto.UploadAdvertisementImageApiRequest
 import org.example.marketingimageapiserver.dto.SaveAdvertisementImageResult
@@ -199,7 +200,7 @@ class AdvertisementImageService(
         return "Get all advertisement images from service"
     }
 
-    fun connectAdvertisementId(draftId: Long, advertisementId: Long): Int {
+    fun connectAdvertisementId(draftId: Long, advertisementId: Long): ConnectAdvertisementResult {
         return transaction {
             val imageMetadataEntities = advertisementImageMetaRepository.findByDraftId(draftId)
 
@@ -211,11 +212,17 @@ class AdvertisementImageService(
                 )
             }
 
+            val connectedS3BucketKeys = mutableListOf<String>()
             imageMetadataEntities.forEach { entity ->
                 entity.advertisementId = advertisementId
+                connectedS3BucketKeys.add(entity.s3Key)
             }
 
-            imageMetadataEntities.size
+            ConnectAdvertisementResult(
+                imageMetadataEntities.size,
+                connectedS3BucketKeys
+
+            )
         }
     }
 

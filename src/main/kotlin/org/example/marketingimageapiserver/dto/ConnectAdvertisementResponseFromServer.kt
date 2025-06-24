@@ -2,9 +2,10 @@ package org.example.marketingimageapiserver.dto
 
 import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
 import org.springframework.http.HttpStatus
+import kotlin.String
 
-data class ConnectAdvertisementIdResponse(
-    val updatedCount: Int,
+data class ConnectAdvertisementResponseFromServer(
+    val result: ConnectAdvertisementResult,
     override val httpStatus: HttpStatus,
     override val msaServiceErrorCode: MSAServiceErrorCode,
     override val errorMessage: String? = null,
@@ -12,14 +13,14 @@ data class ConnectAdvertisementIdResponse(
 ): MSABusinessErrorResponse(httpStatus, msaServiceErrorCode, errorMessage, logics) {
     companion object {
         fun of(
-            updatedCount: Int,
+            result: ConnectAdvertisementResult,
             httpStatus: HttpStatus,
-            msaServiceErrorCode: MSAServiceErrorCode
-        ): ConnectAdvertisementIdResponse {
-            return ConnectAdvertisementIdResponse(
-                updatedCount = updatedCount,
+            msaServiceErrorCode: MSAServiceErrorCode,
+        ): ConnectAdvertisementResponseFromServer {
+            return ConnectAdvertisementResponseFromServer(
+                result = result,
                 httpStatus = httpStatus,
-                msaServiceErrorCode = msaServiceErrorCode
+                msaServiceErrorCode = msaServiceErrorCode,
             )
         }
     }
