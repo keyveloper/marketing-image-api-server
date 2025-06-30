@@ -3,7 +3,7 @@ package org.example.marketingimageapiserver.dto
 
 data class AdvertisementImageMetadataWithUrl(
     val advertisementId: Long,
-    val writerId: Long,
+    val writerId: String,
     val presignedUrl: String?,
     val bucketName: String?,
     val s3Key: String?,
@@ -15,7 +15,7 @@ data class AdvertisementImageMetadataWithUrl(
     companion object {
         fun of(
             advertisementId: Long,
-            writerId: Long,
+            writerId: String,
             presignedUrl: String,
             bucketName: String,
             s3Key: String,

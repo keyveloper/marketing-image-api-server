@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.Column
 object AdvertisementImageMetadataTable : BaseDateLongIdTable("ad_image_metadata") {
     val advertisementId: Column<Long> = long("advertisement_id")
     val advertisementDraftId: Column<Long> = long("advertisement_draft_id")
-    val writerId: Column<Long> = long("writer_id")
+    val writerId: Column<String> = varchar("writer_id", 255)
     val isThumbnail: Column<Boolean> = bool("is_thumbnail")
     val originalFileName: Column<String> = varchar("original_file_name", 255)
     val contentType: Column<String> = varchar("content_type", 100)

@@ -7,7 +7,7 @@ class AdvertisementImageMetadataEntity(id: EntityID<Long>): BaseDateEntity(id, A
     companion object: BaseDateEntityAutoUpdate<AdvertisementImageMetadataEntity>(AdvertisementImageMetadataTable)
     var advertisementId: Long by AdvertisementImageMetadataTable.advertisementId
     var advertisementDraftId: Long by AdvertisementImageMetadataTable.advertisementDraftId
-    var writerId: Long by AdvertisementImageMetadataTable.writerId
+    var writerId by AdvertisementImageMetadataTable.writerId
     var isThumbnail: Boolean by AdvertisementImageMetadataTable.isThumbnail
     var originalFileName: String by AdvertisementImageMetadataTable.originalFileName
     var contentType: String by AdvertisementImageMetadataTable.contentType

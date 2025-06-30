@@ -3,7 +3,7 @@ package org.example.marketingimageapiserver.dto
 data class AdvertisementImageMetadata(
     val advertisementId: Long,
     val advertisementDraftId: Long,
-    val writerId: Long,
+    val writerId: String,
     val isThumbnail: Boolean,
     val originalFileName: String?,
     val contentType: String?,
@@ -15,7 +15,7 @@ data class AdvertisementImageMetadata(
         fun of(
             advertisementId: Long,
             advertisementDraftId: Long,
-            writerId: Long,
+            writerId: String,
             isThumbnail: Boolean,
             originalFileName: String?,
             contentType: String,
