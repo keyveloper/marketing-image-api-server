@@ -50,6 +50,9 @@ dependencies {
 
     // Tika: image signature
     implementation("org.apache.tika:tika-core:2.9.0") // or latest
+
+    // Thumbnailator: image resizing
+    implementation("net.coobird:thumbnailator:0.4.20")
 }
 
 kotlin {
