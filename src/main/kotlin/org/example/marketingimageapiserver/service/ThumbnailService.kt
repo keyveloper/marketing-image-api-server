@@ -3,6 +3,7 @@ package org.example.marketingimageapiserver.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.coobird.thumbnailator.Thumbnails
 import org.example.marketingimageapiserver.dto.AdThumbnailMetadata
+import org.example.marketingimageapiserver.dto.ThumbnailResult
 import org.example.marketingimageapiserver.exception.NotFoundAdImageMetaDataException
 import org.example.marketingimageapiserver.exception.S3UploadException
 import org.example.marketingimageapiserver.repository.AdvertisementImageMetaRepository
@@ -94,7 +95,7 @@ class ThumbnailService(
                 )
                 logger.info { "Saved thumbnail metadata to DB with id: $thumbnailMetaId" }
 
-                ThumbnailResult(
+                ThumbnailResult.of(
                     imageMetaId = imageMetaId,
                     thumbnailMetaId = thumbnailMetaId,
                     originalS3Key = originalS3Key,
@@ -111,12 +112,3 @@ class ThumbnailService(
         }
     }
 }
-
-data class ThumbnailResult(
-    val imageMetaId: Long,
-    val thumbnailMetaId: Long,
-    val originalS3Key: String,
-    val thumbnailS3Key: String,
-    val thumbnailBucketName: String,
-    val thumbnailSize: Long
-)
