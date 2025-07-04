@@ -3,8 +3,10 @@ package org.example.marketingimageapiserver.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import net.coobird.thumbnailator.Thumbnails
 import org.example.marketingimageapiserver.dto.AdThumbnailMetadata
+import org.example.marketingimageapiserver.dto.ThumbnailMetadataWithUrl
 import org.example.marketingimageapiserver.dto.ThumbnailResult
 import org.example.marketingimageapiserver.exception.NotFoundAdImageMetaDataException
+import org.example.marketingimageapiserver.exception.NotFoundThumbnailException
 import org.example.marketingimageapiserver.exception.S3UploadException
 import org.example.marketingimageapiserver.repository.AdvertisementImageMetaRepository
 import org.example.marketingimageapiserver.repository.ThumbnailMetaRepository
@@ -15,8 +17,11 @@ import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import software.amazon.awssdk.services.s3.model.S3Exception
+import software.amazon.awssdk.services.s3.presigner.S3Presigner
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.time.Duration
 import java.util.*
 
 @Service
@@ -24,6 +29,7 @@ class ThumbnailService(
     private val advertisementImageMetaRepository: AdvertisementImageMetaRepository,
     private val thumbnailMetaRepository: ThumbnailMetaRepository,
     private val s3Client: S3Client,
+    private val s3Presigner: S3Presigner,
 ) {
     private val logger = KotlinLogging.logger {}
 
@@ -107,6 +113,45 @@ class ThumbnailService(
                 throw S3UploadException(
                     logics = "ThumbnailService.makeThumbnail",
                     message = e.message ?: "Failed to upload thumbnail to S3"
+                )
+            }
+        }
+    }
+
+    fun getThumbnailsByAdvertisementIds(advertisementIds: List<Long>): List<ThumbnailMetadataWithUrl> {
+        return transaction {
+            // 1. Find thumbnail metadata by advertisementIds (single query)
+            val thumbnailEntities = thumbnailMetaRepository.findByAdvertisementIds(advertisementIds)
+
+            if (thumbnailEntities.isEmpty()) {
+                throw NotFoundThumbnailException(
+                    advertisementIds = advertisementIds,
+                    logics = "ThumbnailService.getThumbnailsByAdvertisementIds"
+                )
+            }
+
+            // 2. Generate presigned URLs for each thumbnail
+            thumbnailEntities.map { entity ->
+                val getObjectRequest = GetObjectRequest.builder()
+                    .bucket(entity.bucketName)
+                    .key(entity.s3Key)
+                    .build()
+
+                val presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(15)) // URL expires in 15 minutes
+                    .getObjectRequest(getObjectRequest)
+                    .build()
+
+                val presignedUrl = s3Presigner.presignGetObject(presignRequest).url().toString()
+
+                ThumbnailMetadataWithUrl.of(
+                    advertisementId = entity.advertisementId,
+                    advertisementImageMetaId = entity.advertisementImageMetaId,
+                    presignedUrl = presignedUrl,
+                    bucketName = entity.bucketName,
+                    s3Key = entity.s3Key,
+                    contentType = entity.contentType,
+                    size = entity.size
                 )
             }
         }

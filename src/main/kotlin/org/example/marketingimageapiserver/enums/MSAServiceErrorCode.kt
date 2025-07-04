@@ -26,6 +26,7 @@ enum class MSAServiceErrorCode(val code: Int) {
     // 40000~ : Entity Not found
     NOT_FOUND_IMAGE_PROFILE_IMAGE(40000),
     NOT_FOUND_AD_IMAGE(40001),
+    NOT_FOUND_THUMBNAIL(40002),
 
     // 50000~ : Server errors
     SAVE_FAILED_FOR_DATABASE(50000),

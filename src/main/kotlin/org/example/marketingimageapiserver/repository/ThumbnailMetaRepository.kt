@@ -29,4 +29,10 @@ class ThumbnailMetaRepository {
     fun findById(id: Long): AdvertisementThumbnailMetadataEntity? {
         return AdvertisementThumbnailMetadataEntity.findById(id)
     }
+
+    fun findByAdvertisementIds(advertisementIds: List<Long>): List<AdvertisementThumbnailMetadataEntity> {
+        return AdvertisementThumbnailMetadataEntity.find {
+            AdvertisementThumbnailMetadataTable.advertisementId inList advertisementIds
+        }.toList()
+    }
 }
