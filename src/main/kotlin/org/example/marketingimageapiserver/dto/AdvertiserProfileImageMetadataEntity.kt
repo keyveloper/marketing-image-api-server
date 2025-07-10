@@ -1,13 +1,16 @@
 package org.example.marketingimageapiserver.dto
 
 import org.example.marketingimageapiserver.enums.ProfileImageType
+import org.example.marketingimageapiserver.enums.UserType
 import org.example.marketingimageapiserver.table.AdvertiserProfileImageMetadataTable
 import org.jetbrains.exposed.dao.id.EntityID
 
 class AdvertiserProfileImageMetadataEntity(id: EntityID<Long>): BaseDateEntity(id, AdvertiserProfileImageMetadataTable) {
     companion object: BaseDateEntityAutoUpdate<AdvertiserProfileImageMetadataEntity>(AdvertiserProfileImageMetadataTable)
     var userId: String by AdvertiserProfileImageMetadataTable.userId
-    var profileAdvertiserDraftId: Long? by AdvertiserProfileImageMetadataTable.profileAdvertiserDraftId
+    val userType: UserType by AdvertiserProfileImageMetadataTable.userType
+    val profileImageType: ProfileImageType by AdvertiserProfileImageMetadataTable.profileImageType
+    var advertiserProfileDraftId: String by AdvertiserProfileImageMetadataTable.advertiserProfileDraftDraftId
     var imageType: ProfileImageType by AdvertiserProfileImageMetadataTable.imageType
     var originalFileName: String by AdvertiserProfileImageMetadataTable.originalFileName
     var contentType: String by AdvertiserProfileImageMetadataTable.contentType

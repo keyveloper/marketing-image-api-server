@@ -11,7 +11,7 @@ class AdvertiserProfileImageMetaRepository {
     fun saveAdvertiserProfileImageMetadata(domain: AdvertiserProfileImageMetadata): Long {
         val entity = AdvertiserProfileImageMetadataEntity.new {
             this.userId = domain.userId
-            this.profileAdvertiserDraftId = domain.advertiserProfileDraftId
+            this.advertiserProfileDraftId = domain.advertiserProfileDraftId
             this.imageType = domain.imageType
             this.originalFileName = domain.originalFileName ?: ""
             this.contentType = domain.contentType ?: ""

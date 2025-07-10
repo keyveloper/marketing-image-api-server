@@ -2,12 +2,7 @@ package org.example.marketingimageapiserver.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.tika.Tika
-import org.example.marketingimageapiserver.dto.AdvertiserProfileImageMetadata
-import org.example.marketingimageapiserver.dto.AdvertiserProfileImageMetadataEntity
-import org.example.marketingimageapiserver.dto.AdvertiserProfileImageMetadataWithUrl
-import org.example.marketingimageapiserver.dto.SaveAdvertiserProfileImageResult
-import org.example.marketingimageapiserver.dto.UploadAdvertiserProfileImageApiRequest
-import org.example.marketingimageapiserver.enums.UserType
+import org.example.marketingimageapiserver.dto.*
 import org.example.marketingimageapiserver.exception.S3UploadException
 import org.example.marketingimageapiserver.repository.AdvertiserProfileImageMetaRepository
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -47,7 +42,7 @@ class AdvertiserProfileImageService(
 
             val userType = meta.userType
             val imageType = meta.profileImageType
-            val s3Key = "${userType.lowercase()}/${imageType.name.lowercase()}/${UUID.randomUUID()}-${UUID.randomUUID()}"
+            val s3Key = "${userType.name.lowercase()}/${imageType.name.lowercase()}/${UUID.randomUUID()}-${UUID.randomUUID()}"
             val bucketName = "marketing-user-profile-image"
             var s3UploadSuccessful = false
 
@@ -70,6 +65,8 @@ class AdvertiserProfileImageService(
                 val createdId = advertiserProfileImageMetaRepository.saveAdvertiserProfileImageMetadata(
                     AdvertiserProfileImageMetadata.of(
                         userId = meta.userId,
+                        userType= meta.userType,
+                        profileImageType = meta.profileImageType,
                         advertiserProfileDraftId = meta.advertiserProfileDraftId,
                         imageType = meta.profileImageType,
                         originalFileName = originalFileName,
