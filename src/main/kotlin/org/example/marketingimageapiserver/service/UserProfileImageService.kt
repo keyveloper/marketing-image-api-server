@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.tika.Tika
 import org.example.marketingimageapiserver.dto.*
 import org.example.marketingimageapiserver.exception.S3UploadException
-import org.example.marketingimageapiserver.repository.AdvertiserProfileImageMetaRepository
+import org.example.marketingimageapiserver.repository.UserProfileImageMetaRepository
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -20,18 +20,18 @@ import java.time.Duration
 import java.util.*
 
 @Service
-class AdvertiserProfileImageService(
-    private val advertiserProfileImageMetaRepository: AdvertiserProfileImageMetaRepository,
+class UserProfileImageService(
+    private val userProfileImageMetaRepository: UserProfileImageMetaRepository,
     private val s3Client: S3Client,
     private val s3Presigner: S3Presigner,
 ) {
     private val logger = KotlinLogging.logger {}
     private val tika = Tika()
 
-    fun saveAdvertiserProfileImage(
-        meta: UploadAdvertiserProfileImageApiRequest,
+    fun saveUserProfileImageAndMetadata(
+        meta: UploadUserProfileImageApiRequest,
         file: MultipartFile
-    ): SaveAdvertiserProfileImageResult {
+    ): SaveUserProfileImageResult {
 
         return transaction {
             val fileSize = file.size
@@ -62,12 +62,12 @@ class AdvertiserProfileImageService(
                 logger.info { "S3 upload response: ${response}" }
                 s3UploadSuccessful = true
 
-                val createdId = advertiserProfileImageMetaRepository.saveAdvertiserProfileImageMetadata(
-                    AdvertiserProfileImageMetadata.of(
+                val createdId = userProfileImageMetaRepository.saveUserProfileImageMetadata(
+                    UserProfileImageMetadata.of(
                         userId = meta.userId,
                         userType= meta.userType,
                         profileImageType = meta.profileImageType,
-                        advertiserProfileDraftId = meta.advertiserProfileDraftId,
+                        profileDraftId = meta.userProfileDraftId,
                         imageType = meta.profileImageType,
                         originalFileName = originalFileName,
                         contentType = contentType,
@@ -77,7 +77,7 @@ class AdvertiserProfileImageService(
                     )
                 )
 
-                SaveAdvertiserProfileImageResult.of(
+                SaveUserProfileImageResult.of(
                     id = createdId,
                     s3Key = s3Key,
                     bucketName = bucketName,
@@ -107,38 +107,6 @@ class AdvertiserProfileImageService(
                     }
                 }
                 throw RuntimeException("Failed to save advertiser profile image: ${e.message}", e)
-            }
-        }
-    }
-
-    fun getAdvertiserProfileImageByUserId(userId: String, userType: String): List<AdvertiserProfileImageMetadataWithUrl> {
-        return transaction {
-            val advertiserProfileImageMetadataEntities: List<AdvertiserProfileImageMetadataEntity> =
-                advertiserProfileImageMetaRepository.findAdvertiserProfileImageByUserId(userId)
-
-            advertiserProfileImageMetadataEntities.map { entity ->
-                val getObjectRequest = GetObjectRequest.builder()
-                    .bucket(entity.bucketName)
-                    .key(entity.s3Key)
-                    .build()
-
-                val presignRequest = GetObjectPresignRequest.builder()
-                    .signatureDuration(Duration.ofMinutes(15))
-                    .getObjectRequest(getObjectRequest)
-                    .build()
-
-                val presignedUrl = s3Presigner.presignGetObject(presignRequest).url().toString()
-                AdvertiserProfileImageMetadataWithUrl.of(
-                    userId = entity.userId,
-                    userType = userType,
-                    imageType = entity.imageType,
-                    presignedUrl = presignedUrl,
-                    bucketName = entity.bucketName,
-                    s3Key = entity.s3Key,
-                    contentType = entity.contentType,
-                    size = entity.size,
-                    originalFileName = entity.originalFileName
-                )
             }
         }
     }

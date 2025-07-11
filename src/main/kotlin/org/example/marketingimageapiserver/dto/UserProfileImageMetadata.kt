@@ -2,12 +2,13 @@ package org.example.marketingimageapiserver.dto
 
 import org.example.marketingimageapiserver.enums.ProfileImageType
 import org.example.marketingimageapiserver.enums.UserType
+import java.util.UUID
 
-data class AdvertiserProfileImageMetadata(
-    val userId: String,
+data class UserProfileImageMetadata(
+    val userId: UUID,
     val userType: UserType,
     val profileImageType: ProfileImageType,
-    val advertiserProfileDraftId: String,
+    val profileDraftId: UUID,
     val imageType: ProfileImageType,
     val originalFileName: String?,
     val contentType: String?,
@@ -17,22 +18,22 @@ data class AdvertiserProfileImageMetadata(
 ) {
     companion object {
         fun of(
-            userId: String,
+            userId: UUID,
             userType: UserType,
             profileImageType: ProfileImageType,
-            advertiserProfileDraftId: String,
+            profileDraftId: UUID,
             imageType: ProfileImageType,
             originalFileName: String?,
             contentType: String,
             size: Long,
             bucketName: String,
             s3Key: String
-        ): AdvertiserProfileImageMetadata {
-            return AdvertiserProfileImageMetadata(
+        ): UserProfileImageMetadata {
+            return UserProfileImageMetadata(
                 userId = userId,
                 userType = userType,
                 profileImageType = profileImageType,
-                advertiserProfileDraftId = advertiserProfileDraftId,
+                profileDraftId = profileDraftId,
                 imageType = imageType,
                 originalFileName = originalFileName,
                 contentType = contentType,

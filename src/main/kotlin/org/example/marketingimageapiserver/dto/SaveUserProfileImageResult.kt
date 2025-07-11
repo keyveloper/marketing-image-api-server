@@ -1,8 +1,7 @@
 package org.example.marketingimageapiserver.dto
 
-class SaveInfluencerProfileImageResult(
+data class SaveUserProfileImageResult(
     val id: Long,
-    val userId: String,
     val s3Key: String,
     val bucketName: String,
     val contentType: String,
@@ -12,22 +11,13 @@ class SaveInfluencerProfileImageResult(
     companion object {
         fun of(
             id: Long,
-            userType: String,
             s3Key: String,
             bucketName: String,
             contentType: String,
             size: Long,
             originalFileName: String?
-        ): SaveInfluencerProfileImageResult {
-            return SaveInfluencerProfileImageResult(
-                id,
-                userType,
-                s3Key,
-                bucketName,
-                contentType,
-                size,
-                originalFileName
-            )
+        ): SaveUserProfileImageResult {
+            return SaveUserProfileImageResult(id, s3Key, bucketName, contentType, size, originalFileName)
         }
     }
 }

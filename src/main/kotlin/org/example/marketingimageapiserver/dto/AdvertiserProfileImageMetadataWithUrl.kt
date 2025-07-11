@@ -1,11 +1,12 @@
 package org.example.marketingimageapiserver.dto
 
 import org.example.marketingimageapiserver.enums.ProfileImageType
+import org.example.marketingimageapiserver.enums.UserType
 
 data class AdvertiserProfileImageMetadataWithUrl(
     val userId: String,
-    val userType: String,
-    val imageType: ProfileImageType,
+    val userType: UserType,
+    val profileImageType: ProfileImageType,
     val presignedUrl: String?,
     val bucketName: String?,
     val s3Key: String?,
@@ -16,8 +17,8 @@ data class AdvertiserProfileImageMetadataWithUrl(
     companion object {
         fun of(
             userId: String,
-            userType: String,
-            imageType: ProfileImageType,
+            userType: UserType,
+            profileImageType: ProfileImageType,
             presignedUrl: String,
             bucketName: String,
             s3Key: String,
@@ -28,7 +29,7 @@ data class AdvertiserProfileImageMetadataWithUrl(
             return AdvertiserProfileImageMetadataWithUrl(
                 userId = userId,
                 userType = userType,
-                imageType = imageType,
+                profileImageType = profileImageType,
                 presignedUrl = presignedUrl,
                 bucketName = bucketName,
                 s3Key = s3Key,
