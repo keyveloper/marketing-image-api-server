@@ -1,7 +1,9 @@
 package org.example.marketingimageapiserver.dto
 
+import java.util.UUID
+
 data class UploadAdvertisementImageApiRequest(
+    val writerId: UUID,
     val advertisementDraftId: Long,
-    val writerId: String,
     val isThumbnail: Boolean,
 )

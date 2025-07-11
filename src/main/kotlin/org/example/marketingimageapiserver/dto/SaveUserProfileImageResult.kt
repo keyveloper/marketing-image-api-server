@@ -1,7 +1,7 @@
 package org.example.marketingimageapiserver.dto
 
 data class SaveUserProfileImageResult(
-    val id: Long,
+    val id: Long, //metadata
     val s3Key: String,
     val bucketName: String,
     val contentType: String,

@@ -1,9 +1,11 @@
 package org.example.marketingimageapiserver.dto
 
+import java.util.UUID
+
 data class AdvertisementImageMetadata(
     val advertisementId: Long,
     val advertisementDraftId: Long,
-    val writerId: String,
+    val writerId: UUID,
     val isThumbnail: Boolean,
     val originalFileName: String?,
     val contentType: String?,
@@ -15,7 +17,7 @@ data class AdvertisementImageMetadata(
         fun of(
             advertisementId: Long,
             advertisementDraftId: Long,
-            writerId: String,
+            writerId: UUID,
             isThumbnail: Boolean,
             originalFileName: String?,
             contentType: String,
