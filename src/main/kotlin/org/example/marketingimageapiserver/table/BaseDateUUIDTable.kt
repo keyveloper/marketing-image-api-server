@@ -1,0 +1,9 @@
+package org.example.marketingimageapiserver.table
+
+import org.jetbrains.exposed.dao.id.UUIDTable
+import org.jetbrains.exposed.sql.Column
+
+abstract class BaseDateUUIDTable(tableName: String, idName: String = "id"): UUIDTable(tableName, idName) {
+    val createdAt: Column<Long> = long("created_at").clientDefault { System.currentTimeMillis() }
+    val lastModifiedAt: Column<Long> = long("last_modified_at").clientDefault { System.currentTimeMillis() }
+}

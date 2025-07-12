@@ -1,6 +1,6 @@
 package org.example.marketingimageapiserver.dto
 
-data class ThumbnailResult(
+data class S3ThumbnailResult(
     val imageMetaId: Long,
     val thumbnailMetaId: Long,
     val originalS3Key: String,
@@ -16,8 +16,8 @@ data class ThumbnailResult(
             thumbnailS3Key: String,
             thumbnailBucketName: String,
             thumbnailSize: Long
-        ): ThumbnailResult {
-            return ThumbnailResult(
+        ): S3ThumbnailResult {
+            return S3ThumbnailResult(
                 imageMetaId = imageMetaId,
                 thumbnailMetaId = thumbnailMetaId,
                 originalS3Key = originalS3Key,

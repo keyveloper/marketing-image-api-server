@@ -5,7 +5,7 @@ import java.util.UUID
 
 object AdvertisementImageMetadataTable : BaseDateLongIdTable("ad_image_metadata") {
     val advertisementId: Column<Long> = long("advertisement_id")
-    val advertisementDraftId: Column<Long> = long("advertisement_draft_id")
+    val advertisementDraftId: Column<UUID> = uuid("advertisement_draft_id")
     val writerId: Column<UUID> = uuid("writer_id")
     val isThumbnail: Column<Boolean> = bool("is_thumbnail")
     val originalFileName: Column<String> = varchar("original_file_name", 255)

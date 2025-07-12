@@ -200,7 +200,7 @@ class AdvertisementImageService(
         return "Get all advertisement images from service"
     }
 
-    fun connectAdvertisementId(draftId: Long, advertisementId: Long): ConnectAdvertisementResult {
+    fun connectAdvertisementId(draftId: UUID, advertisementId: Long): ConnectAdvertisementResult {
         return transaction {
             val imageMetadataEntities = advertisementImageMetaRepository.findByDraftId(draftId)
 

@@ -4,7 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import net.coobird.thumbnailator.Thumbnails
 import org.example.marketingimageapiserver.dto.AdThumbnailMetadata
 import org.example.marketingimageapiserver.dto.ThumbnailMetadataWithUrl
-import org.example.marketingimageapiserver.dto.ThumbnailResult
+import org.example.marketingimageapiserver.dto.S3ThumbnailResult
 import org.example.marketingimageapiserver.exception.NotFoundAdImageMetaDataException
 import org.example.marketingimageapiserver.exception.NotFoundThumbnailException
 import org.example.marketingimageapiserver.exception.S3UploadException
@@ -33,7 +33,7 @@ class ThumbnailService(
 ) {
     private val logger = KotlinLogging.logger {}
 
-    fun makeThumbnail(imageMetaId: Long): ThumbnailResult {
+    fun makeThumbnail(imageMetaId: Long): S3ThumbnailResult {
         return transaction {
             // 1. Find entity by imageMetaId
             val imageMetadataEntity = advertisementImageMetaRepository.findByImageMetaId(imageMetaId)
@@ -101,7 +101,7 @@ class ThumbnailService(
                 )
                 logger.info { "Saved thumbnail metadata to DB with id: $thumbnailMetaId" }
 
-                ThumbnailResult.of(
+                S3ThumbnailResult.of(
                     imageMetaId = imageMetaId,
                     thumbnailMetaId = thumbnailMetaId,
                     originalS3Key = originalS3Key,

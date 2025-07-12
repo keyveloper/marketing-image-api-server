@@ -4,7 +4,7 @@ import java.util.UUID
 
 data class AdvertisementImageMetadata(
     val advertisementId: Long,
-    val advertisementDraftId: Long,
+    val advertisementDraftId: UUID,
     val writerId: UUID,
     val isThumbnail: Boolean,
     val originalFileName: String?,
@@ -16,7 +16,7 @@ data class AdvertisementImageMetadata(
     companion object {
         fun of(
             advertisementId: Long,
-            advertisementDraftId: Long,
+            advertisementDraftId: UUID,
             writerId: UUID,
             isThumbnail: Boolean,
             originalFileName: String?,

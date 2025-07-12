@@ -4,6 +4,7 @@ import org.example.marketingimageapiserver.dto.AdvertisementImageMetadata
 import org.example.marketingimageapiserver.dto.AdvertisementImageMetadataEntity
 import org.example.marketingimageapiserver.table.AdvertisementImageMetadataTable
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 class AdvertisementImageMetaRepository {
@@ -33,7 +34,7 @@ class AdvertisementImageMetaRepository {
         return AdvertisementImageMetadataEntity.findById(metaId)
     }
 
-    fun findByDraftId(draftId: Long): List<AdvertisementImageMetadataEntity> {
+    fun findByDraftId(draftId: UUID): List<AdvertisementImageMetadataEntity> {
         return AdvertisementImageMetadataEntity.find {
             AdvertisementImageMetadataTable.advertisementDraftId eq draftId
         }.toList()

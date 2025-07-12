@@ -1,5 +1,6 @@
 package org.example.marketingimageapiserver.controller
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.example.marketingimageapiserver.dto.FetchAdThumbnailUrlsRequest
 import org.example.marketingimageapiserver.dto.MakeThumbnailResponseFromServer
 import org.example.marketingimageapiserver.dto.ThumbnailResponseFromServer
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*
 class AdvertisementMetaController(
     private val thumbnailService: ThumbnailService,
 ) {
+    private val logger = KotlinLogging.logger {}
 
     @PostMapping("/thumbnail/{imageMetaId}")
     fun makeThumbnail(
@@ -21,13 +23,17 @@ class AdvertisementMetaController(
     ): ResponseEntity<MakeThumbnailResponseFromServer> {
         val result = thumbnailService.makeThumbnail(imageMetaId)
 
-        return ResponseEntity.ok().body(
+        val response = ResponseEntity.ok().body(
             MakeThumbnailResponseFromServer.of(
                 result = result,
                 httpStatus = HttpStatus.OK,
                 msaServiceErrorCode = MSAServiceErrorCode.OK
             )
         )
+
+        logger.info { "makeThumbnail response for imageMetaId=$imageMetaId: ${response.body}" }
+
+        return response
     }
 
     @PostMapping("/thumbnails")
