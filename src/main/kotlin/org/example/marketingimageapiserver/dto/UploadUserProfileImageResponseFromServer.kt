@@ -4,7 +4,7 @@ import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
 import org.springframework.http.HttpStatus
 
 data class UploadUserProfileImageResponseFromServer(
-    val saveProfileImageResult: SaveUserProfileImageResult?,
+    val saveUserProfileImageResult: SaveUserProfileImageResult?,
     override val httpStatus: HttpStatus,
     override val msaServiceErrorCode: MSAServiceErrorCode,
     override val errorMessage: String? = null,
@@ -17,7 +17,7 @@ data class UploadUserProfileImageResponseFromServer(
             msaServiceErrorCode: MSAServiceErrorCode,
         ): UploadUserProfileImageResponseFromServer {
             return UploadUserProfileImageResponseFromServer(
-                saveProfileImageResult = result,
+                saveUserProfileImageResult = result,
                 httpStatus = httpStatus,
                 msaServiceErrorCode = msaServiceErrorCode,
             )

@@ -1,5 +1,6 @@
 package org.example.marketingimageapiserver.controller
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.example.marketingimageapiserver.dto.UploadUserProfileImageApiRequest
 import org.example.marketingimageapiserver.dto.UploadUserProfileImageResponseFromServer
 import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile
 class UserProfileImageController(
     private val userProfileImageService: UserProfileImageService,
 ) {
+    private val logger = KotlinLogging.logger {}
 
     @PostMapping
     fun saveUserProfileImage(
@@ -22,12 +24,16 @@ class UserProfileImageController(
     ): ResponseEntity<UploadUserProfileImageResponseFromServer> {
         val result = userProfileImageService.saveUserProfileImageAndMetadata(meta, file)
 
-        return ResponseEntity.ok().body(
+        val response = ResponseEntity.ok().body(
             UploadUserProfileImageResponseFromServer.of(
                 result,
                 HttpStatus.OK,
                 MSAServiceErrorCode.OK,
             )
         )
+
+        logger.info { "saveUserProfileImage response for userId=${meta.userId}: ${response.body}" }
+
+        return response
     }
 }
