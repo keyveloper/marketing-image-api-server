@@ -1,34 +1,35 @@
 package org.example.marketingimageapiserver.controller
 
+import org.example.marketingimageapiserver.dto.ChangeUserProfileStatusApiRequest
+import org.example.marketingimageapiserver.dto.ChangeUserProfileStatusResponseFromServer
+import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
+import org.example.marketingimageapiserver.service.UserProfileImageService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/profile-image-meta")
-class ProfileImageMetaController {
+class ProfileImageMetaController(
+    private val userProfileImageService: UserProfileImageService
+) {
 
-    @GetMapping
-    fun getAllProfileImageMeta(): ResponseEntity<String> {
-        return ResponseEntity.ok("Get all profile image meta")
-    }
+    @PostMapping("/change-status")
+    fun changeUserProfileStatus(
+        @RequestBody request: ChangeUserProfileStatusApiRequest
+    ): ResponseEntity<ChangeUserProfileStatusResponseFromServer> {
+        val metadataId = userProfileImageService.changeProfileStatusToSave(
+            entityId = request.entityId,
+            userId = request.userId,
+            userType = request.userType
+        )
 
-    @GetMapping("/{id}")
-    fun getProfileImageMetaById(@PathVariable id: Long): ResponseEntity<String> {
-        return ResponseEntity.ok("Get profile image meta with id: $id")
-    }
+        val response = ChangeUserProfileStatusResponseFromServer.of(
+            effectedRow = metadataId,
+            httpStatus = HttpStatus.OK,
+            msaServiceErrorCode = MSAServiceErrorCode.OK
+        )
 
-    @PostMapping
-    fun createProfileImageMeta(@RequestBody body: String): ResponseEntity<String> {
-        return ResponseEntity.ok("Create profile image meta")
-    }
-
-    @PutMapping("/{id}")
-    fun updateProfileImageMeta(@PathVariable id: Long, @RequestBody body: String): ResponseEntity<String> {
-        return ResponseEntity.ok("Update profile image meta with id: $id")
-    }
-
-    @DeleteMapping("/{id}")
-    fun deleteProfileImageMeta(@PathVariable id: Long): ResponseEntity<String> {
-        return ResponseEntity.ok("Delete profile image meta with id: $id")
+        return ResponseEntity.ok(response)
     }
 }

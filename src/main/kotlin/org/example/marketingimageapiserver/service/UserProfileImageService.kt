@@ -3,6 +3,7 @@ package org.example.marketingimageapiserver.service
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.tika.Tika
 import org.example.marketingimageapiserver.dto.*
+import org.example.marketingimageapiserver.enums.UserType
 import org.example.marketingimageapiserver.exception.S3UploadException
 import org.example.marketingimageapiserver.repository.UserProfileImageMetaRepository
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -11,12 +12,9 @@ import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
-import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import software.amazon.awssdk.services.s3.model.S3Exception
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
-import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
-import java.time.Duration
 import java.util.*
 
 @Service
@@ -108,6 +106,16 @@ class UserProfileImageService(
                 }
                 throw RuntimeException("Failed to save advertiser profile image: ${e.message}", e)
             }
+        }
+    }
+
+    fun changeProfileStatusToSave(entityId: Long, userId: UUID, userType: UserType): Long {
+        return transaction {
+            userProfileImageMetaRepository.changeDraftToSave(
+                targetEntityId = entityId,
+                targetUserId = userId,
+                targetUserType = userType
+            )
         }
     }
 }

@@ -1,6 +1,7 @@
 package org.example.marketingimageapiserver.table
 
 import org.example.marketingimageapiserver.enums.ProfileImageType
+import org.example.marketingimageapiserver.enums.ProfileMetadataStatus
 import org.example.marketingimageapiserver.enums.UserType
 import org.jetbrains.exposed.sql.Column
 import java.util.UUID
@@ -16,4 +17,9 @@ object UserProfileImageMetadataTable : BaseDateLongIdTable("user_profile_image_m
     val size: Column<Long> = long("size")
     val bucketName: Column<String> = varchar("bucket_name", 255)
     val s3Key: Column<String> = varchar("s3_key", 500)
+    val profileMetadataStatus: Column<ProfileMetadataStatus> = enumerationByName(
+        "profile_metadata_status",
+        255,
+        ProfileMetadataStatus::class
+    )
 }

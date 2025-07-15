@@ -1,0 +1,26 @@
+package org.example.marketingimageapiserver.dto
+
+import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
+import org.springframework.http.HttpStatus
+
+data class ChangeUserProfileStatusResponseFromServer(
+    val effectedRow: Long?,
+    override val httpStatus: HttpStatus,
+    override val msaServiceErrorCode: MSAServiceErrorCode,
+    override val errorMessage: String? = null,
+    override val logics: String? = null
+): MSABusinessErrorResponse(httpStatus, msaServiceErrorCode) {
+    companion object {
+        fun of(
+            effectedRow: Long,
+            httpStatus: HttpStatus,
+            msaServiceErrorCode: MSAServiceErrorCode,
+        ): ChangeUserProfileStatusResponseFromServer {
+            return ChangeUserProfileStatusResponseFromServer(
+                effectedRow = effectedRow,
+                httpStatus = httpStatus,
+                msaServiceErrorCode = msaServiceErrorCode,
+            )
+        }
+    }
+}
