@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/profile-image-meta")
-class ProfileImageMetaController(
+class UserProfileImageMetaController(
     private val userProfileImageService: UserProfileImageService
 ) {
 

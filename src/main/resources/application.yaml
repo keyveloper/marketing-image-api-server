@@ -25,5 +25,5 @@ cloud:
     credentials:
       access-key: ${aws.credentials.s3.access-key}
       secret-key: ${aws.credentials.s3.secret-key}
-
+debug: true
 
