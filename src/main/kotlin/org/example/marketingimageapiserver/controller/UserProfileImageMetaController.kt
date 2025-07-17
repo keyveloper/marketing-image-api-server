@@ -1,5 +1,6 @@
 package org.example.marketingimageapiserver.controller
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.example.marketingimageapiserver.dto.ChangeUserProfileStatusApiRequest
 import org.example.marketingimageapiserver.dto.ChangeUserProfileStatusResponseFromServer
 import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
@@ -13,22 +14,25 @@ import org.springframework.web.bind.annotation.*
 class UserProfileImageMetaController(
     private val userProfileImageService: UserProfileImageService
 ) {
+    val logger = KotlinLogging.logger {}
 
     @PostMapping("/change-status")
     fun changeUserProfileStatus(
         @RequestBody request: ChangeUserProfileStatusApiRequest
     ): ResponseEntity<ChangeUserProfileStatusResponseFromServer> {
-        val metadataId = userProfileImageService.changeProfileStatusToSave(
+        val effectedRows = userProfileImageService.changeProfileStatusToSave(
             entityId = request.entityId,
             userId = request.userId,
             userType = request.userType
         )
 
         val response = ChangeUserProfileStatusResponseFromServer.of(
-            effectedRow = metadataId,
+            effectedRow = effectedRows,
             httpStatus = HttpStatus.OK,
             msaServiceErrorCode = MSAServiceErrorCode.OK
         )
+
+        logger.info { "change-user-profile-status: response: ${response}" }
 
         return ResponseEntity.ok(response)
     }

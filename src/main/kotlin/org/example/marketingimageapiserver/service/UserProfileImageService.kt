@@ -109,7 +109,7 @@ class UserProfileImageService(
         }
     }
 
-    fun changeProfileStatusToSave(entityId: Long, userId: UUID, userType: UserType): Long {
+    fun changeProfileStatusToSave(entityId: Long, userId: UUID, userType: UserType): Int {
         return transaction {
             userProfileImageMetaRepository.changeDraftToSave(
                 targetEntityId = entityId,

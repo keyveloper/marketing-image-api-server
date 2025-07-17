@@ -4,7 +4,7 @@ import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
 import org.springframework.http.HttpStatus
 
 data class ChangeUserProfileStatusResponseFromServer(
-    val effectedRow: Long?,
+    val effectedRow: Int,
     override val httpStatus: HttpStatus,
     override val msaServiceErrorCode: MSAServiceErrorCode,
     override val errorMessage: String? = null,
@@ -12,7 +12,7 @@ data class ChangeUserProfileStatusResponseFromServer(
 ): MSABusinessErrorResponse(httpStatus, msaServiceErrorCode) {
     companion object {
         fun of(
-            effectedRow: Long,
+            effectedRow: Int,
             httpStatus: HttpStatus,
             msaServiceErrorCode: MSAServiceErrorCode,
         ): ChangeUserProfileStatusResponseFromServer {

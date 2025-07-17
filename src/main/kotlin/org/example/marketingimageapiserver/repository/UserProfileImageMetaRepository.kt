@@ -30,11 +30,11 @@ class UserProfileImageMetaRepository {
         return entity.id.value
     }
 
-    fun changeDraftToSave(targetEntityId: Long, targetUserId: UUID, targetUserType: UserType): Long {
+    fun changeDraftToSave(targetEntityId: Long, targetUserId: UUID, targetUserType: UserType): Int {
         val updatedRows = UserProfileImageMetadataTable.update({
-            (UserProfileImageMetadataTable.id eq targetEntityId) and
-                    (UserProfileImageMetadataTable.userId eq targetUserId) and
-                    (UserProfileImageMetadataTable.userType eq targetUserType)
+            (UserProfileImageMetadataTable.userId eq targetUserId) and
+                    (UserProfileImageMetadataTable.userType eq targetUserType) and
+                    (UserProfileImageMetadataTable.profileMetadataStatus eq ProfileMetadataStatus.DRAFT)
         }) {
             it[profileMetadataStatus] = ProfileMetadataStatus.SAVE
         }
@@ -42,13 +42,13 @@ class UserProfileImageMetaRepository {
         if (updatedRows == 0) {
             throw CannotChangeProfileStatusException(
                 logics = "userProfileMetaRepository-changeDraftToSave",
-                metaId = targetEntityId,
+                metaId = null,
                 userType = targetUserType,
                 userId = targetUserId
             )
         }
 
-        return targetEntityId
+        return updatedRows
     }
 
     fun findAdvertiserProfileImageByUserId(userId: UUID): List<UserProfileImageMetadataEntity> {
