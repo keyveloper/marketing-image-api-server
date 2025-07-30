@@ -4,7 +4,10 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.tika.Tika
 import org.example.marketingimageapiserver.dto.*
 import org.example.marketingimageapiserver.enums.UserType
+import org.example.marketingimageapiserver.enums.ProfileImageType
+import org.example.marketingimageapiserver.exception.DuplicateProfileImageTypeException
 import org.example.marketingimageapiserver.exception.S3UploadException
+import org.example.marketingimageapiserver.exception.UserProfileImageCountExceededException
 import org.example.marketingimageapiserver.repository.UserProfileImageMetaRepository
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Service
@@ -12,9 +15,12 @@ import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
+import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import software.amazon.awssdk.services.s3.model.S3Exception
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
+import java.time.Duration
 import java.util.*
 
 @Service
@@ -116,6 +122,66 @@ class UserProfileImageService(
                 targetUserId = userId,
                 targetUserType = userType
             )
+        }
+    }
+
+    fun getUserProfileImagesByUserId(
+        userId: UUID
+    ): List<UserProfileImageMetadataWithUrl> {
+        return transaction {
+
+            // 1. Find user profile image metadata by userId
+            val userProfileImageMetadataEntities: List<UserProfileImageMetadataEntity> =
+                userProfileImageMetaRepository.findAdvertiserProfileImageByUserId(userId)
+
+            // Validation: size must be 2 or less
+            if (userProfileImageMetadataEntities.size > 2) {
+                throw UserProfileImageCountExceededException(
+                    logics = "UserProfileImageService.getUserProfileImagesByUserId",
+                    message = "User profile image count exceeded. Found ${userProfileImageMetadataEntities.size} images for userId=$userId. Maximum allowed is 2."
+                )
+            }
+
+            // Validation: if size is 2, must have one BACKGROUND and one PROFILE (no duplicates)
+            if (userProfileImageMetadataEntities.size == 2) {
+                val profileTypes = userProfileImageMetadataEntities.map { it.profileImageType }
+                val hasBackground = profileTypes.contains(ProfileImageType.BACKGROUND)
+                val hasProfile = profileTypes.contains(ProfileImageType.PROFILE)
+
+                if (!hasBackground || !hasProfile) {
+                    throw DuplicateProfileImageTypeException(
+                        logics = "UserProfileImageService.getUserProfileImagesByUserId",
+                        message = "Duplicate profile image type found for userId=$userId. Each user can have only one BACKGROUND and one PROFILE image."
+                    )
+                }
+            }
+
+            // 2. Make S3 presigned URL request using the key
+            userProfileImageMetadataEntities.map { entity ->
+
+                val getObjectRequest = GetObjectRequest.builder()
+                    .bucket(entity.bucketName)
+                    .key(entity.s3Key)
+                    .build()
+
+                val presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(15)) // URL expires in 15 minutes
+                    .getObjectRequest(getObjectRequest)
+                    .build()
+
+                val presignedUrl = s3Presigner.presignGetObject(presignRequest).url().toString()
+                UserProfileImageMetadataWithUrl.of(
+                    userId = entity.userId,
+                    userType = entity.userType,
+                    profileImageType = entity.profileImageType,
+                    presignedUrl = presignedUrl,
+                    bucketName = entity.bucketName,
+                    s3Key = entity.s3Key,
+                    contentType = entity.contentType,
+                    size = entity.size,
+                    originalFileName = entity.originalFileName
+                )
+            }
         }
     }
 }

@@ -53,7 +53,9 @@ class UserProfileImageMetaRepository {
 
     fun findAdvertiserProfileImageByUserId(userId: UUID): List<UserProfileImageMetadataEntity> {
         return UserProfileImageMetadataEntity.find {
-            UserProfileImageMetadataTable.userId eq userId
+            (UserProfileImageMetadataTable.userId eq userId) and
+                    (UserProfileImageMetadataTable.profileMetadataStatus eq ProfileMetadataStatus.SAVE)
+
         }.toList()
     }
 }

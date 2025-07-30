@@ -1,0 +1,86 @@
+### User Profile Image API Test
+### IntelliJ HTTP Client
+
+### Variables
+@baseUrl = http://localhost:8081
+@userId = 14a80d8c-d021-70a9-ba28-5bab07c853c5
+@userProfileDraftId = 660e8400-e29b-41d4-a716-446655440001
+
+### ===========================================
+### POST - Upload User Profile Image
+### ===========================================
+
+### Upload Profile Image - INFLUENCER / PROFILE
+POST {{baseUrl}}/api/user-profile
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="meta"; filename="meta.json"
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "userType": "INFLUENCER",
+  "profileImageType": "PROFILE",
+  "userProfileDraftId": "{{userProfileDraftId}}"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="test-profile.png"
+Content-Type: image/png
+
+< ./test-profile.png
+--boundary--
+
+### Upload Profile Image - ADVERTISER_COMMON / PROFILE
+POST {{baseUrl}}/api/user-profile
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="meta"; filename="meta.json"
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "userType": "ADVERTISER_COMMON",
+  "profileImageType": "PROFILE",
+  "userProfileDraftId": "{{userProfileDraftId}}"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="test-profile.png"
+Content-Type: image/png
+
+< ./test-profile.png
+--boundary--
+
+### Upload Background Image - ADVERTISER_BRAND / BACKGROUND
+POST {{baseUrl}}/api/user-profile
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="meta"; filename="meta.json"
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "userType": "ADVERTISER_BRAND",
+  "profileImageType": "BACKGROUND",
+  "userProfileDraftId": "{{userProfileDraftId}}"
+}
+--boundary
+Content-Disposition: form-data; name="file"; filename="test-background.png"
+Content-Type: image/png
+
+< ./test-background.png
+--boundary--
+
+### ===========================================
+### GET - Get User Profile Images by User ID
+### ===========================================
+
+### Get User Profile Images
+GET {{baseUrl}}/api/user-profile/{{userId}}
+Accept: application/json
+
+### Get User Profile Images - with specific UUID
+GET {{baseUrl}}/api/user-profile/550e8400-e29b-41d4-a716-446655440000
+Accept: application/json
