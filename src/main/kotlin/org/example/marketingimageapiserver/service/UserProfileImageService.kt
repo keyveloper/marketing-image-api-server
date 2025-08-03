@@ -184,4 +184,59 @@ class UserProfileImageService(
             }
         }
     }
+
+    fun getUserProfileImagesByUserIds(
+        userIds: List<UUID>
+    ): List<UserProfileImageMetadataWithUrl> {
+        return transaction {
+
+            // 1. Find user profile image metadata by userIds (single query)
+            val userProfileImageMetadataEntities: List<UserProfileImageMetadataEntity> =
+                userProfileImageMetaRepository.findByUserIds(userIds)
+
+            // 2. Validation: each userId must have at most 1 PROFILE and 1 BACKGROUND
+            val groupedByUserId = userProfileImageMetadataEntities.groupBy { it.userId }
+
+            groupedByUserId.forEach { (userId, entities) ->
+                val profileCount = entities.count { it.profileImageType == ProfileImageType.PROFILE }
+                val backgroundCount = entities.count { it.profileImageType == ProfileImageType.BACKGROUND }
+
+                if (profileCount > 1 || backgroundCount > 1) {
+                    throw UserProfileImageCountExceededException(
+                        logics = "UserProfileImageService.getUserProfileImagesByUserIds",
+                        message = "User profile image count exceeded for userId=$userId. " +
+                                "Found $profileCount PROFILE and $backgroundCount BACKGROUND images. " +
+                                "Each user can have only one PROFILE and one BACKGROUND image."
+                    )
+                }
+            }
+
+            // 3. Generate presigned URLs for each user profile image
+            userProfileImageMetadataEntities.map { entity ->
+                val getObjectRequest = GetObjectRequest.builder()
+                    .bucket(entity.bucketName)
+                    .key(entity.s3Key)
+                    .build()
+
+                val presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(15)) // URL expires in 15 minutes
+                    .getObjectRequest(getObjectRequest)
+                    .build()
+
+                val presignedUrl = s3Presigner.presignGetObject(presignRequest).url().toString()
+
+                UserProfileImageMetadataWithUrl.of(
+                    userId = entity.userId,
+                    userType = entity.userType,
+                    profileImageType = entity.profileImageType,
+                    presignedUrl = presignedUrl,
+                    bucketName = entity.bucketName,
+                    s3Key = entity.s3Key,
+                    contentType = entity.contentType,
+                    size = entity.size,
+                    originalFileName = entity.originalFileName
+                )
+            }
+        }
+    }
 }

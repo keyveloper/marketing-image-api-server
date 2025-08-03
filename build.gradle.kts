@@ -61,6 +61,14 @@ kotlin {
     }
 }
 
+sourceSets {
+    main {
+        kotlin {
+            exclude("**/aexample/**")
+        }
+    }
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }

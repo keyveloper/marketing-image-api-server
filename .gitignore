@@ -41,3 +41,5 @@ out/
 
 ### secret ###
 src/main/resources/aws-credentials.yaml
+
+src/main/kotlin/org/example/marketingimageapiserver/aexample

@@ -1,6 +1,8 @@
 package org.example.marketingimageapiserver.controller
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.example.marketingimageapiserver.dto.GetUserProfileImagesApiRequest
+import org.example.marketingimageapiserver.dto.GetUserProfileImagesResponseFromServer
 import org.example.marketingimageapiserver.dto.UploadUserProfileImageApiRequest
 import org.example.marketingimageapiserver.dto.UploadUserProfileImageResponseFromServer
 import org.example.marketingimageapiserver.dto.UserProfileImageResponseFromServer
@@ -51,6 +53,21 @@ class UserProfileImageController(
                 MSAServiceErrorCode.OK,
                 null,
                 null
+            )
+        )
+    }
+
+    @PostMapping("/user-profiles")
+    fun getUserProfileImagesByUserIds(
+        @RequestBody request: GetUserProfileImagesApiRequest
+    ): ResponseEntity<GetUserProfileImagesResponseFromServer> {
+        val result = userProfileImageService.getUserProfileImagesByUserIds(request.userIds)
+
+        return ResponseEntity.ok().body(
+            GetUserProfileImagesResponseFromServer.of(
+                result = result,
+                httpStatus = HttpStatus.OK,
+                msaServiceErrorCode = MSAServiceErrorCode.OK
             )
         )
     }

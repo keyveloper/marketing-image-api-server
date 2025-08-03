@@ -32,6 +32,7 @@ class UserProfileImageMetaRepository {
 
     fun changeDraftToSave(targetEntityId: Long, targetUserId: UUID, targetUserType: UserType): Int {
         val updatedRows = UserProfileImageMetadataTable.update({
+            (UserProfileImageMetadataTable.id eq targetEntityId) and
             (UserProfileImageMetadataTable.userId eq targetUserId) and
                     (UserProfileImageMetadataTable.userType eq targetUserType) and
                     (UserProfileImageMetadataTable.profileMetadataStatus eq ProfileMetadataStatus.DRAFT)
@@ -56,6 +57,13 @@ class UserProfileImageMetaRepository {
             (UserProfileImageMetadataTable.userId eq userId) and
                     (UserProfileImageMetadataTable.profileMetadataStatus eq ProfileMetadataStatus.SAVE)
 
+        }.toList()
+    }
+
+    fun findByUserIds(userIds: List<UUID>): List<UserProfileImageMetadataEntity> {
+        return UserProfileImageMetadataEntity.find {
+            (UserProfileImageMetadataTable.userId inList userIds) and
+                    (UserProfileImageMetadataTable.profileMetadataStatus eq ProfileMetadataStatus.SAVE)
         }.toList()
     }
 }
