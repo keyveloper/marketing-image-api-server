@@ -1,21 +1,15 @@
 spring:
   application:
     name: marketing-image-api-server
-
+  profiles:
+    group:
+      local: db-local
+      prod: db-prod
+      aws: db-aws
   config:
-    import: "classpath:aws-credentials.yaml"
-
-  datasource:
-    url: jdbc:mariadb://localhost:3306/marketing-image?userSSL=false
-    username: tod
-    password: 1234
-    driver-class-name: org.mariadb.jdbc.Driver
-    hikari:
-      connection-timeout: 20000
-      minimum-idle: 10
-      maximum-pool-size: 10
-      idle-timeout: 300000
-      pool-name: marketingHikariCP
+    import:
+      - "classpath:aws-credentials.yaml"
+      - "classpath:application-db.yaml"
 
 
 cloud:
