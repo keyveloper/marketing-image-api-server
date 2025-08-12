@@ -57,7 +57,7 @@ class UserProfileImageController(
         )
     }
 
-    @PostMapping("/user-profiles")
+    @PostMapping("/all")
     fun getUserProfileImagesByUserIds(
         @RequestBody request: GetUserProfileImagesApiRequest
     ): ResponseEntity<GetUserProfileImagesResponseFromServer> {
