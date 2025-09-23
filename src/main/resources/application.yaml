@@ -1,3 +1,18 @@
 spring:
   application:
     name: marketing-image-api-server
+
+  config:
+    import: "classpath:aws-credentials.yaml"
+
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: ${aws.credentials.s3.access-key}
+      secret-key: ${aws.credentials.s3.secret-key}
+
+
+
+

@@ -1,0 +1,14 @@
+package org.example.marketingimageapiserver.table
+
+import org.jetbrains.exposed.sql.Column
+
+object ProfileImageMetadataTable : BaseDateLongIdTable("profile_image_metadata") {
+    val userType: Column<String> = varchar("user_type", 50)
+    val userId: Column<Long> = long("user_id")
+    val imageType: Column<String> = varchar("image_type", 20)
+    val originalFileName: Column<String> = varchar("original_file_name", 255)
+    val contentType: Column<String> = varchar("content_type", 100)
+    val size: Column<Long> = long("size")
+    val bucketName: Column<String> = varchar("bucket_name", 255)
+    val s3Key: Column<String> = varchar("s3_key", 500)
+}
