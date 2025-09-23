@@ -1,11 +1,12 @@
 package org.example.marketingimageapiserver.table
 
+import org.example.marketingimageapiserver.enums.ProfileImageType
 import org.jetbrains.exposed.sql.Column
 
 object ProfileImageMetadataTable : BaseDateLongIdTable("profile_image_metadata") {
     val userType: Column<String> = varchar("user_type", 50)
     val userId: Column<Long> = long("user_id")
-    val imageType: Column<String> = varchar("image_type", 20)
+    val imageType: Column<ProfileImageType> = enumeration("image_type", ProfileImageType::class)
     val originalFileName: Column<String> = varchar("original_file_name", 255)
     val contentType: Column<String> = varchar("content_type", 100)
     val size: Column<Long> = long("size")

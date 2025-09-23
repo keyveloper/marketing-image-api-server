@@ -32,7 +32,10 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    // exposed
+
+    // DB: exposed
+    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     implementation("org.jetbrains.exposed:exposed-core:0.59.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.59.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.59.0")

@@ -6,5 +6,18 @@ data class SaveFileResult(
     val bucketName: String,
     val contentType: String,
     val size: Long,
-    val originalFileName: String
-)
+    val originalFileName: String?
+) {
+    companion object {
+        fun of(
+            id: Long,
+            s3Key: String,
+            bucketName: String,
+            contentType: String,
+            size: Long,
+            originalFileName: String?
+        ): SaveFileResult {
+            return SaveFileResult(id, s3Key, bucketName, contentType, size, originalFileName)
+        }
+    }
+}

@@ -19,7 +19,9 @@ class ProfileImageController(
     ): ResponseEntity<MakeNewProfileImageResponse> {
         val result = profileImageService.createProfileImage(meta, file)
 
-        return ResponseEntity.ok(result)
+        return ResponseEntity.ok().body(
+            MakeNewProfileImageResponse.of(result)
+        )
     }
 
     @GetMapping

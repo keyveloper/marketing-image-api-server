@@ -9,8 +9,9 @@ class ProfileImageMetaRepository {
 
     fun saveProfileImageMetadata(domain: ProfileImageMetadata): Long {
         val entity = ProfileImageMetadataEntity.new {
-            // Note: ProfileImageMetadata DTO is missing userType, userId, imageType fields
-            // These need to be added to the DTO or passed separately
+            this.userType = domain.userType
+            this.userId = domain.userId
+            this.imageType = domain.profileImageType
             this.originalFileName = domain.originalFileName ?: ""
             this.contentType = domain.contentType ?: ""
             this.size = domain.size ?: 0L

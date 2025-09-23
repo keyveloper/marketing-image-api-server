@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import org.apache.tika.Tika
 import org.example.marketingimageapiserver.dto.ProfileImageMetadata
+import org.example.marketingimageapiserver.dto.SaveFileResult
 import org.example.marketingimageapiserver.repository.ProfileImageMetaRepository
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
@@ -24,7 +25,7 @@ class ProfileImageService(
     fun createProfileImage(
         meta: MakeNewProfileImageRequest,
         file: MultipartFile
-    ): String {
+    ): SaveFileResult {
 
         return transaction {
             // Extract file metadata from MultipartFile using Tika
@@ -69,7 +70,14 @@ class ProfileImageService(
                     )
                 )
 
-                "Profile image uploaded successfully. S3 Key: $s3Key, Content-Type: $contentType"
+                SaveFileResult.of(
+                    id = createdId,
+                    s3Key = s3Key,
+                    bucketName = bucketName,
+                    contentType = contentType,
+                    size = fileSize,
+                    originalFileName = originalFileName
+                )
             } catch (e: Exception) {
                 throw RuntimeException("Failed to upload file to S3: ${e.message}", e)
                 // delete S3 and metadata
