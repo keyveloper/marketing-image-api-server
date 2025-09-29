@@ -1,10 +1,10 @@
 package org.example.marketingimageapiserver.dto
 
 import org.example.marketingimageapiserver.enums.ProfileImageType
-import java.time.LocalDateTime
+import org.example.marketingimageapiserver.enums.UserType
 
 data class ProfileImageMetadata(
-    val userType: String,
+    val userType: UserType,
     val userId: Long,
     val profileImageType: ProfileImageType,
     val originalFileName: String?,
@@ -15,7 +15,7 @@ data class ProfileImageMetadata(
 ) {
     companion object {
         fun of(
-            userType: String,
+            userType: UserType,
             userId: Long,
             profileImageType: ProfileImageType,
             originalFileName: String?,

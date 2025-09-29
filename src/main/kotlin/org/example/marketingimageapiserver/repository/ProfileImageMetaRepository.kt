@@ -2,6 +2,10 @@ package org.example.marketingimageapiserver.repository
 
 import org.example.marketingimageapiserver.dto.ProfileImageMetadata
 import org.example.marketingimageapiserver.dto.ProfileImageMetadataEntity
+import org.example.marketingimageapiserver.enums.ProfileImageType
+import org.example.marketingimageapiserver.enums.UserType
+import org.example.marketingimageapiserver.table.ProfileImageMetadataTable
+import org.jetbrains.exposed.sql.and
 import org.springframework.stereotype.Component
 
 @Component
@@ -19,5 +23,13 @@ class ProfileImageMetaRepository {
             this.s3Key = domain.s3Key
         }
         return entity.id.value
+    }
+
+    fun findProfileImageMetaDataByUserInfo(userId: Long, userType: UserType): ProfileImageMetadataEntity? {
+        return ProfileImageMetadataEntity.find {
+            (ProfileImageMetadataTable.userId eq userId) and
+            (ProfileImageMetadataTable.userType eq userType) and
+            (ProfileImageMetadataTable.imageType eq ProfileImageType.PROFILE)
+        }.singleOrNull()
     }
 }

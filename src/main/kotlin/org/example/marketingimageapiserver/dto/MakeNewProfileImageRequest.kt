@@ -1,10 +1,10 @@
 package org.example.marketingimageapiserver.dto
 
 import org.example.marketingimageapiserver.enums.ProfileImageType
-import java.time.LocalDateTime
+import org.example.marketingimageapiserver.enums.UserType
 
 data class MakeNewProfileImageRequest(
-    val userType: String,
+    val userType: UserType,
     val userId: Long,
     val profileImageType: ProfileImageType, // background, profile
 )

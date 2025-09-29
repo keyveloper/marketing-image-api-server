@@ -7,17 +7,25 @@ import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import software.amazon.awssdk.services.s3.model.GetObjectRequest
+import software.amazon.awssdk.services.s3.presigner.S3Presigner
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
 import org.apache.tika.Tika
+import org.example.marketingimageapiserver.dto.ProfileImageMetadataWithUrl
 import org.example.marketingimageapiserver.dto.ProfileImageMetadata
 import org.example.marketingimageapiserver.dto.SaveFileResult
+import org.example.marketingimageapiserver.enums.UserType
+import org.example.marketingimageapiserver.exception.NotFoundProfileImageMetaDataException
 import org.example.marketingimageapiserver.repository.ProfileImageMetaRepository
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.Duration
 import java.util.*
 
 @Service
 class ProfileImageService(
     private val profileImageMetaRepository: ProfileImageMetaRepository,
     private val s3Client: S3Client,
+    private val s3Presigner: S3Presigner,
 ) {
     private val looger = KotlinLogging.logger {}
     private val tika = Tika()
@@ -86,14 +94,45 @@ class ProfileImageService(
 
     }
 
-    fun getAllProfileImages(): String {
-        return "Get all profile images from service"
-    }
+    fun getProfileImage(
+        userId: Long,
+        userType: UserType
+    ): ProfileImageMetadataWithUrl {
+        return transaction {
+            // 1. Find bucket-key from profile-image-metadata by userId and userType
 
-    fun getProfileImageById(id: Long): String {
-        return "Get profile image with id: $id from service"
-    }
+            val profileImageMetaDataEntity =
+                profileImageMetaRepository.findProfileImageMetaDataByUserInfo(userId, userType)
+                    ?: throw NotFoundProfileImageMetaDataException(
+                        userType = userType,
+                        userId = userId,
+                        logics = "profileImageService: getProfileImage"
+                    )
 
+            // 2. Make S3 presigned URL request using the key
+            val getObjectRequest = GetObjectRequest.builder()
+                .bucket(profileImageMetaDataEntity.bucketName)
+                .key(profileImageMetaDataEntity.s3Key)
+                .build()
+
+            val presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(15)) // URL expires in 15 minutes
+                .getObjectRequest(getObjectRequest)
+                .build()
+
+            val presignedUrl = s3Presigner.presignGetObject(presignRequest).url().toString()
+
+            // 3. Send to client presigned URL (making new DTO result -> response)
+            ProfileImageMetadataWithUrl.of(
+                presignedUrl = presignedUrl,
+                bucketName = profileImageMetaDataEntity.bucketName,
+                s3Key = profileImageMetaDataEntity.s3Key,
+                contentType = profileImageMetaDataEntity.contentType,
+                size = profileImageMetaDataEntity.size,
+                originalFileName = profileImageMetaDataEntity.originalFileName
+            )
+        }
+    }
 
     fun updateProfileImage(id: Long, body: String): String {
         return "Update profile image with id: $id from service"

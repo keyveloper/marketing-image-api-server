@@ -2,6 +2,8 @@ package org.example.marketingimageapiserver.controller
 
 import org.example.marketingimageapiserver.dto.MakeNewProfileImageRequest
 import org.example.marketingimageapiserver.dto.MakeNewProfileImageResponse
+import org.example.marketingimageapiserver.dto.ProfileImageResponse
+import org.example.marketingimageapiserver.enums.UserType
 import org.example.marketingimageapiserver.service.ProfileImageService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -24,14 +26,15 @@ class ProfileImageController(
         )
     }
 
-    @GetMapping
-    fun getAllProfileImages(): ResponseEntity<String> {
-        return ResponseEntity.ok("Get all profile images")
-    }
-
-    @GetMapping("/{id}")
-    fun getProfileImageById(@PathVariable id: Long): ResponseEntity<String> {
-        return ResponseEntity.ok("Get profile image with id: $id")
+    @GetMapping("/{userId}/{userType}")
+    fun getProfileImage(
+        @PathVariable("userId") userId: Long,
+        @PathVariable("userType") userType: UserType
+    ): ResponseEntity<ProfileImageResponse> {
+        val result = profileImageService.getProfileImage(userId, userType)
+        return ResponseEntity.ok().body(
+            ProfileImageResponse.of(result)
+        )
     }
 
 
