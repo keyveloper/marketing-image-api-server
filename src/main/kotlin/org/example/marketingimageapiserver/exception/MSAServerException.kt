@@ -3,7 +3,7 @@ package org.example.marketingimageapiserver.exception
 import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
 import org.springframework.http.HttpStatus
 
-open class BusinessException(
+open class MSAServerException(
     open val httpStatus: HttpStatus,
     open val msaServiceErrorCode: MSAServiceErrorCode,
     open val logics: String,

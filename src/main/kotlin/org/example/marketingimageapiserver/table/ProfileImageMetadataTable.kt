@@ -5,9 +5,9 @@ import org.example.marketingimageapiserver.enums.UserType
 import org.jetbrains.exposed.sql.Column
 
 object ProfileImageMetadataTable : BaseDateLongIdTable("profile_image_metadata") {
-    val userType: Column<UserType> = enumeration("user_type", UserType::class)
+    val userType: Column<UserType> = enumerationByName("user_type", 255,UserType::class)
     val userId: Column<Long> = long("user_id")
-    val imageType: Column<ProfileImageType> = enumeration("image_type", ProfileImageType::class)
+    val imageType: Column<ProfileImageType> = enumerationByName("image_type", 255, ProfileImageType::class)
     val originalFileName: Column<String> = varchar("original_file_name", 255)
     val contentType: Column<String> = varchar("content_type", 100)
     val size: Column<Long> = long("size")

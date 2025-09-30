@@ -8,14 +8,19 @@ import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
+import software.amazon.awssdk.services.s3.model.S3Exception
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
 import org.apache.tika.Tika
+import org.example.marketingimageapiserver.dto.DeleteFileResult
 import org.example.marketingimageapiserver.dto.ProfileImageMetadataWithUrl
 import org.example.marketingimageapiserver.dto.ProfileImageMetadata
+import org.example.marketingimageapiserver.dto.ProfileImageMetadataEntity
 import org.example.marketingimageapiserver.dto.SaveFileResult
 import org.example.marketingimageapiserver.enums.UserType
 import org.example.marketingimageapiserver.exception.NotFoundProfileImageMetaDataException
+import org.example.marketingimageapiserver.exception.S3UploadException
 import org.example.marketingimageapiserver.repository.ProfileImageMetaRepository
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
@@ -30,7 +35,7 @@ class ProfileImageService(
     private val looger = KotlinLogging.logger {}
     private val tika = Tika()
 
-    fun createProfileImage(
+    fun saveProfileImage(
         meta: MakeNewProfileImageRequest,
         file: MultipartFile
     ): SaveFileResult {
@@ -47,6 +52,7 @@ class ProfileImageService(
             // Generate unique S3 key
             val s3Key = "profile-images/${UUID.randomUUID()}-${UUID.randomUUID()}"
             val bucketName = "marketing-image-bucket"
+            var s3UploadSuccessful = false
 
             try {
                 val logger = KotlinLogging.logger {}
@@ -64,6 +70,7 @@ class ProfileImageService(
                 )
 
                 logger.info { "response: ${response}" }
+                s3UploadSuccessful = true
 
                 val createdId = profileImageMetaRepository.saveProfileImageMetadata(
                     ProfileImageMetadata.of(
@@ -86,51 +93,83 @@ class ProfileImageService(
                     size = fileSize,
                     originalFileName = originalFileName
                 )
+            } catch (e: S3Exception) {
+              throw S3UploadException(
+                  logics = "ProfileImageService.saveProfileImage",
+                  message = e.message?: "S3 file uploading failed"
+                  )
             } catch (e: Exception) {
-                throw RuntimeException("Failed to upload file to S3: ${e.message}", e)
-                // delete S3 and metadata
+                // Rollback: Delete S3 object if it was successfully uploaded
+                if (s3UploadSuccessful) {
+                    try {
+                        val deleteObjectRequest = DeleteObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(s3Key)
+                            .build()
+
+                        s3Client.deleteObject(deleteObjectRequest)
+                        looger.info { "Successfully deleted S3 object during rollback: $s3Key" }
+                    } catch (deleteException: Exception) {
+                        looger.error(deleteException) {
+                            "Failed to delete S3 object during rollback: $s3Key"
+                        }
+                    }
+                }
+                throw RuntimeException("Failed to save profile image: ${e.message}", e)
             }
         }
-
     }
 
     fun getProfileImage(
         userId: Long,
         userType: UserType
-    ): ProfileImageMetadataWithUrl {
+    ): List<ProfileImageMetadataWithUrl> {
         return transaction {
             // 1. Find bucket-key from profile-image-metadata by userId and userType
 
-            val profileImageMetaDataEntity =
+            val profileImageMetaDataEntities: List<ProfileImageMetadataEntity> =
                 profileImageMetaRepository.findProfileImageMetaDataByUserInfo(userId, userType)
-                    ?: throw NotFoundProfileImageMetaDataException(
-                        userType = userType,
-                        userId = userId,
-                        logics = "profileImageService: getProfileImage"
-                    )
+
 
             // 2. Make S3 presigned URL request using the key
-            val getObjectRequest = GetObjectRequest.builder()
-                .bucket(profileImageMetaDataEntity.bucketName)
-                .key(profileImageMetaDataEntity.s3Key)
+            profileImageMetaDataEntities.map { entity ->
+                val getObjectRequest = GetObjectRequest.builder()
+                    .bucket(entity.bucketName)
+                    .key(entity.s3Key)
+                    .build()
+
+                val presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(15)) // URL expires in 15 minutes
+                    .getObjectRequest(getObjectRequest)
+                    .build()
+
+                val presignedUrl = s3Presigner.presignGetObject(presignRequest).url().toString()
+                ProfileImageMetadataWithUrl.of(
+                    presignedUrl = presignedUrl,
+                    bucketName = entity.bucketName,
+                    s3Key = entity.s3Key,
+                    contentType = entity.contentType,
+                    size = entity.size,
+                    originalFileName = entity.originalFileName
+                )
+            }
+        }
+    }
+
+    fun deleteById(
+        imageMetaId: Long
+    ): DeleteFileResult {
+        return transaction {
+            val imageMetadataEntity = profileImageMetaRepository.findByImageMetaId(imageMetaId)
+                ?: @trans
+        }try {
+
+            val deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(s3Key)
                 .build()
+        } catch(e: S3Exception) {
 
-            val presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(15)) // URL expires in 15 minutes
-                .getObjectRequest(getObjectRequest)
-                .build()
-
-            val presignedUrl = s3Presigner.presignGetObject(presignRequest).url().toString()
-
-            // 3. Send to client presigned URL (making new DTO result -> response)
-            ProfileImageMetadataWithUrl.of(
-                presignedUrl = presignedUrl,
-                bucketName = profileImageMetaDataEntity.bucketName,
-                s3Key = profileImageMetaDataEntity.s3Key,
-                contentType = profileImageMetaDataEntity.contentType,
-                size = profileImageMetaDataEntity.size,
-                originalFileName = profileImageMetaDataEntity.originalFileName
-            )
         }
     }
 

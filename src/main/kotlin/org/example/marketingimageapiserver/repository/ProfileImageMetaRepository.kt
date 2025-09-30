@@ -25,11 +25,15 @@ class ProfileImageMetaRepository {
         return entity.id.value
     }
 
-    fun findProfileImageMetaDataByUserInfo(userId: Long, userType: UserType): ProfileImageMetadataEntity? {
+    fun findProfileImageMetaDataByUserInfo(userId: Long, userType: UserType): List<ProfileImageMetadataEntity> {
         return ProfileImageMetadataEntity.find {
             (ProfileImageMetadataTable.userId eq userId) and
             (ProfileImageMetadataTable.userType eq userType) and
             (ProfileImageMetadataTable.imageType eq ProfileImageType.PROFILE)
-        }.singleOrNull()
+        }.toList()
+    }
+
+    fun findByImageMetaId(metaId: Long): ProfileImageMetadataEntity? {
+        return ProfileImageMetadataEntity.findById(metaId)
     }
 }

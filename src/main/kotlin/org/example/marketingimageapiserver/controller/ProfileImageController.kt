@@ -19,7 +19,7 @@ class ProfileImageController(
         @RequestPart("meta") meta: MakeNewProfileImageRequest,
         @RequestPart("file") file: MultipartFile
     ): ResponseEntity<MakeNewProfileImageResponse> {
-        val result = profileImageService.createProfileImage(meta, file)
+        val result = profileImageService.saveProfileImage(meta, file)
 
         return ResponseEntity.ok().body(
             MakeNewProfileImageResponse.of(result)

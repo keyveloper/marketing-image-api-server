@@ -1,11 +1,11 @@
 package org.example.marketingimageapiserver.dto
 
 data class ProfileImageResponse(
-    val profileImageMetadataWithUrl: ProfileImageMetadataWithUrl
+    val profileImageMetadataWithUrl: List<ProfileImageMetadataWithUrl>
 ) {
     companion object {
         fun of(
-            profileImageMetadataWithUrl: ProfileImageMetadataWithUrl,
+            profileImageMetadataWithUrl: List<ProfileImageMetadataWithUrl>,
         ): ProfileImageResponse {
             return ProfileImageResponse(
                 profileImageMetadataWithUrl

@@ -11,4 +11,4 @@ data class NotFoundProfileImageMetaDataException(
     override val msaServiceErrorCode: MSAServiceErrorCode = MSAServiceErrorCode.NOT_FOUND_IMAGE_PROFILE_IMAGE,
     override val logics: String,
     override val message: String = "Can't find user's image meta data: ${userType}: ${userId}",
-    ): BusinessException(httpStatus, msaServiceErrorCode, logics, message)
+    ): MSAServerException(httpStatus, msaServiceErrorCode, logics, message)
