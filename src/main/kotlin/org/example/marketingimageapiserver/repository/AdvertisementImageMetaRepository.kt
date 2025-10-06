@@ -2,6 +2,7 @@ package org.example.marketingimageapiserver.repository
 
 import org.example.marketingimageapiserver.dto.AdvertisementImageMetadata
 import org.example.marketingimageapiserver.dto.AdvertisementImageMetadataEntity
+import org.example.marketingimageapiserver.table.AdvertisementImageMetadataTable
 import org.springframework.stereotype.Component
 
 @Component
@@ -18,5 +19,11 @@ class AdvertisementImageMetaRepository {
             this.s3Key = domain.s3Key
         }
         return entity.id.value
+    }
+
+    fun findAdvertisementImageMetaDataByAdvertisementId(advertisementId: Long): List<AdvertisementImageMetadataEntity> {
+        return AdvertisementImageMetadataEntity.find {
+            AdvertisementImageMetadataTable.advertisementId eq advertisementId
+        }.toList()
     }
 }

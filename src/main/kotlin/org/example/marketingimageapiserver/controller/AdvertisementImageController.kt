@@ -1,5 +1,6 @@
 package org.example.marketingimageapiserver.controller
 
+import org.example.marketingimageapiserver.dto.AdvertisementImageResponse
 import org.example.marketingimageapiserver.dto.MakeNewAdvertisementImageRequest
 import org.example.marketingimageapiserver.dto.MakeNewAdvertisementImageResponse
 import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
@@ -30,23 +31,14 @@ class AdvertisementImageController(
             )
         )
     }
-    @GetMapping
-    fun getAllAdvertisementImages(): ResponseEntity<String> {
-        return ResponseEntity.ok("Get all advertisement images")
-    }
 
-    @GetMapping("/{id}")
-    fun getAdvertisementImageById(@PathVariable id: Long): ResponseEntity<String> {
-        return ResponseEntity.ok("Get advertisement image with id: $id")
-    }
-
-    @PutMapping("/{id}")
-    fun updateAdvertisementImage(@PathVariable id: Long, @RequestBody body: String): ResponseEntity<String> {
-        return ResponseEntity.ok("Update advertisement image with id: $id")
-    }
-
-    @DeleteMapping("/{id}")
-    fun deleteAdvertisementImage(@PathVariable id: Long): ResponseEntity<String> {
-        return ResponseEntity.ok("Delete advertisement image with id: $id")
+    @GetMapping("/{adId}")
+    fun getAdvertisementImageByAdId(
+        @PathVariable("adId") adId: Long,
+    ): ResponseEntity<AdvertisementImageResponse> {
+        val result = advertisementImageService.getAdvertisementImageByAdId(adId)
+        return ResponseEntity.ok().body(
+            AdvertisementImageResponse.of(result)
+        )
     }
 }
