@@ -1,6 +1,6 @@
 package org.example.marketingimageapiserver.dto
 
-data class SaveFileResult(
+class SaveAdvertisementImageResult(
     val id: Long,
     val s3Key: String,
     val bucketName: String,
@@ -16,8 +16,8 @@ data class SaveFileResult(
             contentType: String,
             size: Long,
             originalFileName: String?
-        ): SaveFileResult {
-            return SaveFileResult(id, s3Key, bucketName, contentType, size, originalFileName)
+        ): SaveAdvertisementImageResult {
+            return SaveAdvertisementImageResult(id, s3Key, bucketName, contentType, size, originalFileName)
         }
     }
 }

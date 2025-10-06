@@ -1,0 +1,22 @@
+package org.example.marketingimageapiserver.repository
+
+import org.example.marketingimageapiserver.dto.AdvertisementImageMetadata
+import org.example.marketingimageapiserver.dto.AdvertisementImageMetadataEntity
+import org.springframework.stereotype.Component
+
+@Component
+class AdvertisementImageMetaRepository {
+
+    fun saveAdvertisementImageMetadata(domain: AdvertisementImageMetadata): Long {
+        val entity = AdvertisementImageMetadataEntity.new {
+            this.advertisementId = domain.advertisementId
+            this.isThumbnail = domain.isThumbnail
+            this.originalFileName = domain.originalFileName ?: ""
+            this.contentType = domain.contentType ?: ""
+            this.size = domain.size ?: 0L
+            this.bucketName = domain.bucketName
+            this.s3Key = domain.s3Key
+        }
+        return entity.id.value
+    }
+}

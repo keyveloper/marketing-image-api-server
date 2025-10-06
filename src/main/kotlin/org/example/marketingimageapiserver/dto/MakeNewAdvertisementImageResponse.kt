@@ -3,8 +3,8 @@ package org.example.marketingimageapiserver.dto
 import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
 import org.springframework.http.HttpStatus
 
-data class MakeNewProfileImageResponse(
-    val saveProfileImageResult: SaveProfileImageResult?,
+data class MakeNewAdvertisementImageResponse(
+    val saveAdvertisementImageResult: SaveAdvertisementImageResult?,
     override val httpStatus: HttpStatus,
     override val msaServiceErrorCode: MSAServiceErrorCode,
     override val errorMessage: String? = null,
@@ -12,12 +12,12 @@ data class MakeNewProfileImageResponse(
 ): MSABusinessErrorResponse(httpStatus, msaServiceErrorCode) {
     companion object {
         fun of(
-            result: SaveProfileImageResult,
+            result: SaveAdvertisementImageResult,
             httpStatus: HttpStatus,
             msaServiceErrorCode: MSAServiceErrorCode,
-        ): MakeNewProfileImageResponse {
-            return MakeNewProfileImageResponse(
-                saveProfileImageResult = result,
+        ): MakeNewAdvertisementImageResponse {
+            return MakeNewAdvertisementImageResponse(
+                saveAdvertisementImageResult = result,
                 httpStatus = httpStatus,
                 msaServiceErrorCode = msaServiceErrorCode,
             )

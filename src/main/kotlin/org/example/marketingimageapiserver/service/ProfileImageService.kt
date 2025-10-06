@@ -17,7 +17,7 @@ import org.example.marketingimageapiserver.dto.DeleteProfileImageResult
 import org.example.marketingimageapiserver.dto.ProfileImageMetadataWithUrl
 import org.example.marketingimageapiserver.dto.ProfileImageMetadata
 import org.example.marketingimageapiserver.dto.ProfileImageMetadataEntity
-import org.example.marketingimageapiserver.dto.SaveFileResult
+import org.example.marketingimageapiserver.dto.SaveProfileImageResult
 import org.example.marketingimageapiserver.enums.UserType
 import org.example.marketingimageapiserver.exception.NotFoundProfileImageMetaDataException
 import org.example.marketingimageapiserver.exception.S3DeleteException
@@ -39,7 +39,7 @@ class ProfileImageService(
     fun saveProfileImage(
         meta: MakeNewProfileImageRequest,
         file: MultipartFile
-    ): SaveFileResult {
+    ): SaveProfileImageResult {
 
         return transaction {
             // Extract file metadata from MultipartFile using Tika
@@ -86,7 +86,7 @@ class ProfileImageService(
                     )
                 )
 
-                SaveFileResult.of(
+                SaveProfileImageResult.of(
                     id = createdId,
                     s3Key = s3Key,
                     bucketName = bucketName,

@@ -1,11 +1,18 @@
 package org.example.marketingimageapiserver.controller
 
+import org.example.marketingimageapiserver.dto.MakeNewAdvertisementImageRequest
+import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
+import org.example.marketingimageapiserver.service.AdvertisementImageService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/advertisement-image-meta")
-class AdvertisementImageMetaController {
+class AdvertisementImageMetaController(
+    private val advertisementImageService: AdvertisementImageService
+) {
 
     @GetMapping
     fun getAllAdvertisementImageMeta(): ResponseEntity<String> {
@@ -17,10 +24,7 @@ class AdvertisementImageMetaController {
         return ResponseEntity.ok("Get advertisement image meta with id: $id")
     }
 
-    @PostMapping
-    fun createAdvertisementImageMeta(@RequestBody body: String): ResponseEntity<String> {
-        return ResponseEntity.ok("Create advertisement image meta")
-    }
+
 
     @PutMapping("/{id}")
     fun updateAdvertisementImageMeta(@PathVariable id: Long, @RequestBody body: String): ResponseEntity<String> {
