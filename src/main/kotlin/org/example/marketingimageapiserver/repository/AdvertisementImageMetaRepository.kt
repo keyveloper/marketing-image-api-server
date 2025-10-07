@@ -26,4 +26,8 @@ class AdvertisementImageMetaRepository {
             AdvertisementImageMetadataTable.advertisementId eq advertisementId
         }.toList()
     }
+
+    fun findByImageMetaId(metaId: Long): AdvertisementImageMetadataEntity? {
+        return AdvertisementImageMetadataEntity.findById(metaId)
+    }
 }

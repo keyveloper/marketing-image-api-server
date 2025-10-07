@@ -1,6 +1,7 @@
 package org.example.marketingimageapiserver.controller
 
 import org.example.marketingimageapiserver.dto.AdvertisementImageResponse
+import org.example.marketingimageapiserver.dto.DeleteAdImageResponse
 import org.example.marketingimageapiserver.dto.MakeNewAdvertisementImageRequest
 import org.example.marketingimageapiserver.dto.MakeNewAdvertisementImageResponse
 import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
@@ -39,6 +40,20 @@ class AdvertisementImageController(
         val result = advertisementImageService.getAdvertisementImageByAdId(adId)
         return ResponseEntity.ok().body(
             AdvertisementImageResponse.of(result)
+        )
+    }
+
+    @DeleteMapping("/{adImageMetaId}")
+    fun deleteAdvertisementImageByMetaId(
+        @PathVariable("adImageMetaId") adImageMetaId: Long
+    ): ResponseEntity<DeleteAdImageResponse> {
+        val result = advertisementImageService.deleteByMetaId(adImageMetaId)
+        return ResponseEntity.ok().body(
+            DeleteAdImageResponse.of(
+                result,
+                HttpStatus.OK,
+                MSAServiceErrorCode.OK
+            )
         )
     }
 }

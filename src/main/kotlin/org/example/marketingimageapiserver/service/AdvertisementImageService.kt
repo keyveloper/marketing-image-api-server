@@ -5,8 +5,11 @@ import org.apache.tika.Tika
 import org.example.marketingimageapiserver.dto.AdvertisementImageMetadata
 import org.example.marketingimageapiserver.dto.AdvertisementImageMetadataEntity
 import org.example.marketingimageapiserver.dto.AdvertisementImageMetadataWithUrl
+import org.example.marketingimageapiserver.dto.DeleteAdImageResult
 import org.example.marketingimageapiserver.dto.MakeNewAdvertisementImageRequest
 import org.example.marketingimageapiserver.dto.SaveAdvertisementImageResult
+import org.example.marketingimageapiserver.exception.NotFoundAdImageMetaDataException
+import org.example.marketingimageapiserver.exception.S3DeleteException
 import org.example.marketingimageapiserver.exception.S3UploadException
 import org.example.marketingimageapiserver.repository.AdvertisementImageMetaRepository
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -150,7 +153,44 @@ class AdvertisementImageService(
         }
     }
 
+    fun deleteByMetaId(
+        imageMetaId: Long
+    ): DeleteAdImageResult {
+        return transaction {
+            val imageMetadataEntity = advertisementImageMetaRepository.findByImageMetaId(imageMetaId)
+                ?: throw NotFoundAdImageMetaDataException(
+                    metaId = imageMetaId,
+                    advertisementId = null,
+                    logics = "AdvertisementImageService.deleteByMetaId",
+                )
+
+            try {
+                val bucketName = imageMetadataEntity.bucketName
+                val s3Key = imageMetadataEntity.s3Key
+
+                val deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(s3Key)
+                    .build()
+
+                s3Client.deleteObject(deleteObjectRequest)
+                DeleteAdImageResult.of(
+                    imageMetaId = imageMetaId,
+                    size = imageMetadataEntity.size,
+                    contentType = imageMetadataEntity.contentType,
+                    s3BucketKey = s3Key,
+                )
+            } catch(e: S3Exception) {
+                throw S3DeleteException(
+                    logics = "AdvertisementImageService.deleteByMetaId",
+                    message = e.message?: "S3 file deletion failed"
+                )
+            }
+        }
+    }
+
     fun getAllAdvertisementImages(): String {
         return "Get all advertisement images from service"
     }
+
 }
