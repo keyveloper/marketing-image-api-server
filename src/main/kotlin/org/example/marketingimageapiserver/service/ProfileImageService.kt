@@ -1,7 +1,7 @@
 package org.example.marketingimageapiserver.service
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.example.marketingimageapiserver.dto.MakeNewProfileImageRequest
+import org.example.marketingimageapiserver.dto.UploadUserProfileImageApiRequest
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.sync.RequestBody
@@ -37,7 +37,7 @@ class ProfileImageService(
     private val tika = Tika()
 
     fun saveProfileImage(
-        meta: MakeNewProfileImageRequest,
+        meta: UploadUserProfileImageApiRequest,
         file: MultipartFile
     ): SaveProfileImageResult {
 

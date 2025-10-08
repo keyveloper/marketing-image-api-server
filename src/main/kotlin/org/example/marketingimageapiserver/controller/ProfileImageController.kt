@@ -1,8 +1,8 @@
 package org.example.marketingimageapiserver.controller
 
 import org.example.marketingimageapiserver.dto.DeleteProfileImageResponse
-import org.example.marketingimageapiserver.dto.MakeNewProfileImageRequest
-import org.example.marketingimageapiserver.dto.MakeNewProfileImageResponse
+import org.example.marketingimageapiserver.dto.UploadUserProfileImageApiRequest
+import org.example.marketingimageapiserver.dto.UploadUserProfileImageResponseFromServer
 import org.example.marketingimageapiserver.dto.ProfileImageResponse
 import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
 import org.example.marketingimageapiserver.enums.UserType
@@ -19,13 +19,13 @@ class ProfileImageController(
 ) {
     @PostMapping
     fun createProfileImage(
-        @RequestPart("meta") meta: MakeNewProfileImageRequest,
+        @RequestPart("meta") meta: UploadUserProfileImageApiRequest,
         @RequestPart("file") file: MultipartFile
-    ): ResponseEntity<MakeNewProfileImageResponse> {
+    ): ResponseEntity<UploadUserProfileImageResponseFromServer> {
         val result = profileImageService.saveProfileImage(meta, file)
 
         return ResponseEntity.ok().body(
-            MakeNewProfileImageResponse.of(
+            UploadUserProfileImageResponseFromServer.of(
                 result,
                 HttpStatus.OK,
                 MSAServiceErrorCode.OK

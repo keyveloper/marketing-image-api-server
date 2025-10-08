@@ -3,7 +3,7 @@ package org.example.marketingimageapiserver.dto
 import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
 import org.springframework.http.HttpStatus
 
-data class MakeNewProfileImageResponse(
+data class UploadUserProfileImageResponseFromServer(
     val saveProfileImageResult: SaveProfileImageResult?,
     override val httpStatus: HttpStatus,
     override val msaServiceErrorCode: MSAServiceErrorCode,
@@ -15,8 +15,8 @@ data class MakeNewProfileImageResponse(
             result: SaveProfileImageResult,
             httpStatus: HttpStatus,
             msaServiceErrorCode: MSAServiceErrorCode,
-        ): MakeNewProfileImageResponse {
-            return MakeNewProfileImageResponse(
+        ): UploadUserProfileImageResponseFromServer {
+            return UploadUserProfileImageResponseFromServer(
                 saveProfileImageResult = result,
                 httpStatus = httpStatus,
                 msaServiceErrorCode = msaServiceErrorCode,
