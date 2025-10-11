@@ -124,12 +124,14 @@ class AdvertisementImageService(
         advertisementId: Long
     ): List<AdvertisementImageMetadataWithUrl> {
         return transaction {
+
             // 1. Find advertisement image metadata by advertisementId
             val advertisementImageMetadataEntities: List<AdvertisementImageMetadataEntity> =
                 advertisementImageMetaRepository.findAdvertisementImageMetaDataByAdvertisementId(advertisementId)
 
             // 2. Make S3 presigned URL request using the key
             advertisementImageMetadataEntities.map { entity ->
+
                 val getObjectRequest = GetObjectRequest.builder()
                     .bucket(entity.bucketName)
                     .key(entity.s3Key)

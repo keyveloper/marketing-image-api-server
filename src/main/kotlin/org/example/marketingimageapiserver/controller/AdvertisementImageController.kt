@@ -17,6 +17,9 @@ class AdvertisementImageController(
     private val advertisementImageService: AdvertisementImageService,
 ) {
 
+    /***
+     * 📌 TODO: WriterId and Advertisement validation add need
+     ***/
     @PostMapping
     fun createAdvertisementImageMeta(
         @RequestPart("meta") meta: UploadAdvertisementImageApiRequest,
