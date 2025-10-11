@@ -3,7 +3,7 @@ package org.example.marketingimageapiserver.dto
 import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
 import org.springframework.http.HttpStatus
 
-data class MakeNewAdvertisementImageResponse(
+data class UploadAdvertisementImageResponseFromServer(
     val saveAdvertisementImageResult: SaveAdvertisementImageResult?,
     override val httpStatus: HttpStatus,
     override val msaServiceErrorCode: MSAServiceErrorCode,
@@ -15,8 +15,8 @@ data class MakeNewAdvertisementImageResponse(
             result: SaveAdvertisementImageResult,
             httpStatus: HttpStatus,
             msaServiceErrorCode: MSAServiceErrorCode,
-        ): MakeNewAdvertisementImageResponse {
-            return MakeNewAdvertisementImageResponse(
+        ): UploadAdvertisementImageResponseFromServer {
+            return UploadAdvertisementImageResponseFromServer(
                 saveAdvertisementImageResult = result,
                 httpStatus = httpStatus,
                 msaServiceErrorCode = msaServiceErrorCode,

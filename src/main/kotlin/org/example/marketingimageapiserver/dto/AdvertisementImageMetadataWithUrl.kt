@@ -1,6 +1,9 @@
 package org.example.marketingimageapiserver.dto
 
+
 data class AdvertisementImageMetadataWithUrl(
+    val advertisementId: Long,
+    val writerId: Long,
     val presignedUrl: String?,
     val bucketName: String?,
     val s3Key: String?,
@@ -11,6 +14,8 @@ data class AdvertisementImageMetadataWithUrl(
 ) {
     companion object {
         fun of(
+            advertisementId: Long,
+            writerId: Long,
             presignedUrl: String,
             bucketName: String,
             s3Key: String,
@@ -20,6 +25,8 @@ data class AdvertisementImageMetadataWithUrl(
             isThumbnail: Boolean = false
         ): AdvertisementImageMetadataWithUrl {
             return AdvertisementImageMetadataWithUrl(
+                advertisementId = advertisementId,
+                writerId = writerId,
                 presignedUrl = presignedUrl,
                 bucketName = bucketName,
                 s3Key = s3Key,

@@ -1,9 +1,9 @@
 package org.example.marketingimageapiserver.controller
 
-import org.example.marketingimageapiserver.dto.AdvertisementImageResponse
+import org.example.marketingimageapiserver.dto.AdvertisementImageResponseFromServer
 import org.example.marketingimageapiserver.dto.DeleteAdImageResponse
-import org.example.marketingimageapiserver.dto.MakeNewAdvertisementImageRequest
-import org.example.marketingimageapiserver.dto.MakeNewAdvertisementImageResponse
+import org.example.marketingimageapiserver.dto.UploadAdvertisementImageApiRequest
+import org.example.marketingimageapiserver.dto.UploadAdvertisementImageResponseFromServer
 import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
 import org.example.marketingimageapiserver.service.AdvertisementImageService
 import org.springframework.http.HttpStatus
@@ -19,13 +19,13 @@ class AdvertisementImageController(
 
     @PostMapping
     fun createAdvertisementImageMeta(
-        @RequestPart("meta") meta: MakeNewAdvertisementImageRequest,
+        @RequestPart("meta") meta: UploadAdvertisementImageApiRequest,
         @RequestPart("file") file: MultipartFile
-    ): ResponseEntity<MakeNewAdvertisementImageResponse> {
+    ): ResponseEntity<UploadAdvertisementImageResponseFromServer> {
         val result = advertisementImageService.saveAdvertisementImage(meta, file)
 
         return ResponseEntity.ok().body(
-            MakeNewAdvertisementImageResponse.of(
+            UploadAdvertisementImageResponseFromServer.of(
                 result,
                 HttpStatus.OK,
                 MSAServiceErrorCode.OK
@@ -36,10 +36,16 @@ class AdvertisementImageController(
     @GetMapping("/{adId}")
     fun getAdvertisementImageByAdId(
         @PathVariable("adId") adId: Long,
-    ): ResponseEntity<AdvertisementImageResponse> {
+    ): ResponseEntity<AdvertisementImageResponseFromServer> {
         val result = advertisementImageService.getAdvertisementImageByAdId(adId)
         return ResponseEntity.ok().body(
-            AdvertisementImageResponse.of(result)
+            AdvertisementImageResponseFromServer.of(
+                result,
+                HttpStatus.OK,
+                MSAServiceErrorCode.OK,
+                null,
+                null
+            )
         )
     }
 

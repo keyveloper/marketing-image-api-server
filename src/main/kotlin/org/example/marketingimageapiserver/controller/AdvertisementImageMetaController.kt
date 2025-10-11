@@ -1,12 +1,8 @@
 package org.example.marketingimageapiserver.controller
 
-import org.example.marketingimageapiserver.dto.MakeNewAdvertisementImageRequest
-import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
 import org.example.marketingimageapiserver.service.AdvertisementImageService
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping("/api/advertisement-image-meta")

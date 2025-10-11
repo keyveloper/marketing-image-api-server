@@ -6,7 +6,7 @@ import org.example.marketingimageapiserver.dto.AdvertisementImageMetadata
 import org.example.marketingimageapiserver.dto.AdvertisementImageMetadataEntity
 import org.example.marketingimageapiserver.dto.AdvertisementImageMetadataWithUrl
 import org.example.marketingimageapiserver.dto.DeleteAdImageResult
-import org.example.marketingimageapiserver.dto.MakeNewAdvertisementImageRequest
+import org.example.marketingimageapiserver.dto.UploadAdvertisementImageApiRequest
 import org.example.marketingimageapiserver.dto.SaveAdvertisementImageResult
 import org.example.marketingimageapiserver.exception.NotFoundAdImageMetaDataException
 import org.example.marketingimageapiserver.exception.S3DeleteException
@@ -36,7 +36,7 @@ class AdvertisementImageService(
     private val tika = Tika()
 
     fun saveAdvertisementImage(
-        meta: MakeNewAdvertisementImageRequest,
+        meta: UploadAdvertisementImageApiRequest,
         file: MultipartFile
     ): SaveAdvertisementImageResult {
 
@@ -74,7 +74,8 @@ class AdvertisementImageService(
 
                 val createdId = advertisementImageMetaRepository.saveAdvertisementImageMetadata(
                     AdvertisementImageMetadata.of(
-                        advertisementId = meta.userId,
+                        advertisementId = meta.advertisementId,
+                        writerId = meta.writerId,
                         isThumbnail = meta.isThumbnail,
                         originalFileName = originalFileName,
                         contentType = contentType,
@@ -141,6 +142,8 @@ class AdvertisementImageService(
 
                 val presignedUrl = s3Presigner.presignGetObject(presignRequest).url().toString()
                 AdvertisementImageMetadataWithUrl.of(
+                    advertisementId = entity.advertisementId,
+                    writerId = entity.writerId,
                     presignedUrl = presignedUrl,
                     bucketName = entity.bucketName,
                     s3Key = entity.s3Key,
