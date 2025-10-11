@@ -11,6 +11,7 @@ class AdvertisementImageMetaRepository {
     fun saveAdvertisementImageMetadata(domain: AdvertisementImageMetadata): Long {
         val entity = AdvertisementImageMetadataEntity.new {
             this.advertisementId = domain.advertisementId
+            this.writerId = domain.writerId
             this.isThumbnail = domain.isThumbnail
             this.originalFileName = domain.originalFileName ?: ""
             this.contentType = domain.contentType ?: ""
