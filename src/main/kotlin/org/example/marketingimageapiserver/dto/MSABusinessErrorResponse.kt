@@ -6,14 +6,14 @@ import org.springframework.http.HttpStatus
 open class MSABusinessErrorResponse(
     open val httpStatus: HttpStatus,
     open val msaServiceErrorCode: MSAServiceErrorCode,
-    open val errorMessage: String,
-    open val logics: String,
+    open val errorMessage: String? = null,
+    open val logics: String? = null,
 ) {
     companion object {
         fun of(
             httpStatus: HttpStatus,
             msaServiceErrorCode: MSAServiceErrorCode,
-            errorMessage: String,
+            errorMessage: String?,
             logics: String
         ): MSABusinessErrorResponse {
             return MSABusinessErrorResponse(

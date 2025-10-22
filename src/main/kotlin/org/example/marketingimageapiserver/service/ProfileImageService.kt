@@ -13,13 +13,14 @@ import software.amazon.awssdk.services.s3.model.S3Exception
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
 import org.apache.tika.Tika
-import org.example.marketingimageapiserver.dto.DeleteFileResult
+import org.example.marketingimageapiserver.dto.DeleteProfileImageResult
 import org.example.marketingimageapiserver.dto.ProfileImageMetadataWithUrl
 import org.example.marketingimageapiserver.dto.ProfileImageMetadata
 import org.example.marketingimageapiserver.dto.ProfileImageMetadataEntity
 import org.example.marketingimageapiserver.dto.SaveFileResult
 import org.example.marketingimageapiserver.enums.UserType
 import org.example.marketingimageapiserver.exception.NotFoundProfileImageMetaDataException
+import org.example.marketingimageapiserver.exception.S3DeleteException
 import org.example.marketingimageapiserver.exception.S3UploadException
 import org.example.marketingimageapiserver.repository.ProfileImageMetaRepository
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -156,28 +157,40 @@ class ProfileImageService(
         }
     }
 
-    fun deleteById(
+    fun deleteByImageMetaId(
         imageMetaId: Long
-    ): DeleteFileResult {
+    ): DeleteProfileImageResult {
         return transaction {
             val imageMetadataEntity = profileImageMetaRepository.findByImageMetaId(imageMetaId)
-                ?: @trans
-        }try {
+                ?: throw NotFoundProfileImageMetaDataException(
+                    metaId = imageMetaId,
+                    logics = "ProfileImageService.deleteProfileImageMetaData",
+                    userType = null,
+                    userId = null,
+                )
 
-            val deleteObjectRequest = DeleteObjectRequest.builder()
-                .bucket(bucketName)
-                .key(s3Key)
-                .build()
-        } catch(e: S3Exception) {
+            try {
+                val bucketName = imageMetadataEntity.bucketName
+                val s3Key = imageMetadataEntity.s3Key
 
+                val deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(s3Key)
+                    .build()
+
+                s3Client.deleteObject(deleteObjectRequest)
+                DeleteProfileImageResult.of(
+                    imageMetaId = imageMetaId,
+                    size = imageMetadataEntity.size,
+                    contentType = imageMetadataEntity.contentType,
+                    s3BucketKey = s3Key,
+                )
+            } catch(e: S3Exception) {
+                throw S3DeleteException(
+                    logics = "ProfileImageService.deleteProfileImageMetaData",
+                    message = e.message?: "S3 file deletion failed"
+                )
+            }
         }
-    }
-
-    fun updateProfileImage(id: Long, body: String): String {
-        return "Update profile image with id: $id from service"
-    }
-
-    fun deleteProfileImage(id: Long): String {
-        return "Delete profile image with id: $id from service"
     }
 }

@@ -1,10 +1,13 @@
 package org.example.marketingimageapiserver.controller
 
+import org.example.marketingimageapiserver.dto.DeleteProfileImageResponse
 import org.example.marketingimageapiserver.dto.MakeNewProfileImageRequest
 import org.example.marketingimageapiserver.dto.MakeNewProfileImageResponse
 import org.example.marketingimageapiserver.dto.ProfileImageResponse
+import org.example.marketingimageapiserver.enums.MSAServiceErrorCode
 import org.example.marketingimageapiserver.enums.UserType
 import org.example.marketingimageapiserver.service.ProfileImageService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -22,7 +25,11 @@ class ProfileImageController(
         val result = profileImageService.saveProfileImage(meta, file)
 
         return ResponseEntity.ok().body(
-            MakeNewProfileImageResponse.of(result)
+            MakeNewProfileImageResponse.of(
+                result,
+                HttpStatus.OK,
+                MSAServiceErrorCode.OK
+            )
         )
     }
 
@@ -37,14 +44,15 @@ class ProfileImageController(
         )
     }
 
-
-    @PutMapping("/{id}")
-    fun updateProfileImage(@PathVariable id: Long, @RequestBody body: String): ResponseEntity<String> {
-        return ResponseEntity.ok("Update profile image with id: $id")
-    }
-
-    @DeleteMapping("/{id}")
-    fun deleteProfileImage(@PathVariable id: Long): ResponseEntity<String> {
-        return ResponseEntity.ok("Delete profile image with id: $id")
+    @DeleteMapping("/{imageMetaId}")
+    fun deleteProfileImage(@PathVariable imageMetaId: Long): ResponseEntity<DeleteProfileImageResponse> {
+        val result = profileImageService.deleteByImageMetaId(imageMetaId)
+        return ResponseEntity.ok().body(
+            DeleteProfileImageResponse.of(
+                result,
+                HttpStatus.OK,
+                MSAServiceErrorCode.OK
+            )
+        )
     }
 }

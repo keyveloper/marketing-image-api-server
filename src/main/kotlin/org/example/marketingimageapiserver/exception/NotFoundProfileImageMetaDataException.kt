@@ -5,8 +5,9 @@ import org.example.marketingimageapiserver.enums.UserType
 import org.springframework.http.HttpStatus
 
 data class NotFoundProfileImageMetaDataException(
-    val userType: UserType,
-    val userId: Long,
+    val metaId: Long?,
+    val userType: UserType?,
+    val userId: Long?,
     override val httpStatus: HttpStatus = HttpStatus.NOT_FOUND,
     override val msaServiceErrorCode: MSAServiceErrorCode = MSAServiceErrorCode.NOT_FOUND_IMAGE_PROFILE_IMAGE,
     override val logics: String,
