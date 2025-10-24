@@ -1,6 +1,8 @@
 package org.example.marketingimageapiserver.controller
 
 import org.example.marketingimageapiserver.dto.AdvertisementImageResponseFromServer
+import org.example.marketingimageapiserver.dto.ConnectAdvertisementIdRequest
+import org.example.marketingimageapiserver.dto.ConnectAdvertisementIdResponse
 import org.example.marketingimageapiserver.dto.DeleteAdImageResponse
 import org.example.marketingimageapiserver.dto.UploadAdvertisementImageApiRequest
 import org.example.marketingimageapiserver.dto.UploadAdvertisementImageResponseFromServer
@@ -62,6 +64,23 @@ class AdvertisementImageController(
                 result,
                 HttpStatus.OK,
                 MSAServiceErrorCode.OK
+            )
+        )
+    }
+
+    @PostMapping("/connect/advertisement")
+    fun connectAdvertisementId(
+        @RequestBody request: ConnectAdvertisementIdRequest
+    ): ResponseEntity<ConnectAdvertisementIdResponse> {
+        val updatedCount = advertisementImageService.connectAdvertisementId(
+            draftId = request.draftId,
+            advertisementId = request.advertisementId
+        )
+        return ResponseEntity.ok().body(
+            ConnectAdvertisementIdResponse.of(
+                updatedCount = updatedCount,
+                httpStatus = HttpStatus.OK,
+                msaServiceErrorCode = MSAServiceErrorCode.OK
             )
         )
     }

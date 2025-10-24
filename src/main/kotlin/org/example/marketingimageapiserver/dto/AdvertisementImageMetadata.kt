@@ -2,6 +2,7 @@ package org.example.marketingimageapiserver.dto
 
 data class AdvertisementImageMetadata(
     val advertisementId: Long,
+    val advertisementDraftId: Long,
     val writerId: Long,
     val isThumbnail: Boolean,
     val originalFileName: String?,
@@ -13,6 +14,7 @@ data class AdvertisementImageMetadata(
     companion object {
         fun of(
             advertisementId: Long,
+            advertisementDraftId: Long,
             writerId: Long,
             isThumbnail: Boolean,
             originalFileName: String?,
@@ -23,6 +25,7 @@ data class AdvertisementImageMetadata(
         ): AdvertisementImageMetadata {
             return AdvertisementImageMetadata(
                 advertisementId = advertisementId,
+                advertisementDraftId = advertisementDraftId,
                 writerId = writerId,
                 isThumbnail = isThumbnail,
                 originalFileName = originalFileName,

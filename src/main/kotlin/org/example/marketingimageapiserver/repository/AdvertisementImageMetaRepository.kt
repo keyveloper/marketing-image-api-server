@@ -11,6 +11,7 @@ class AdvertisementImageMetaRepository {
     fun saveAdvertisementImageMetadata(domain: AdvertisementImageMetadata): Long {
         val entity = AdvertisementImageMetadataEntity.new {
             this.advertisementId = domain.advertisementId
+            this.advertisementDraftId = domain.advertisementDraftId
             this.writerId = domain.writerId
             this.isThumbnail = domain.isThumbnail
             this.originalFileName = domain.originalFileName ?: ""
@@ -30,5 +31,11 @@ class AdvertisementImageMetaRepository {
 
     fun findByImageMetaId(metaId: Long): AdvertisementImageMetadataEntity? {
         return AdvertisementImageMetadataEntity.findById(metaId)
+    }
+
+    fun findByDraftId(draftId: Long): List<AdvertisementImageMetadataEntity> {
+        return AdvertisementImageMetadataEntity.find {
+            AdvertisementImageMetadataTable.advertisementDraftId eq draftId
+        }.toList()
     }
 }

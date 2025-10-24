@@ -74,7 +74,8 @@ class AdvertisementImageService(
 
                 val createdId = advertisementImageMetaRepository.saveAdvertisementImageMetadata(
                     AdvertisementImageMetadata.of(
-                        advertisementId = meta.advertisementId,
+                        advertisementId = -1, // save as draft!
+                        advertisementDraftId = meta.advertisementDraftId,
                         writerId = meta.writerId,
                         isThumbnail = meta.isThumbnail,
                         originalFileName = originalFileName,
@@ -196,6 +197,26 @@ class AdvertisementImageService(
 
     fun getAllAdvertisementImages(): String {
         return "Get all advertisement images from service"
+    }
+
+    fun connectAdvertisementId(draftId: Long, advertisementId: Long): Int {
+        return transaction {
+            val imageMetadataEntities = advertisementImageMetaRepository.findByDraftId(draftId)
+
+            if (imageMetadataEntities.isEmpty()) {
+                throw NotFoundAdImageMetaDataException(
+                    metaId = null,
+                    advertisementId = null,
+                    logics = "AdvertisementImageService.connectAdvertisementId",
+                )
+            }
+
+            imageMetadataEntities.forEach { entity ->
+                entity.advertisementId = advertisementId
+            }
+
+            imageMetadataEntities.size
+        }
     }
 
 }
